@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "story-factory/story.schema.json",
+  "title": "story-factory story",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "id", "type", "title", "acceptance_criteria", "out_of_scope", "dependencies", "sources", "meta"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "id": { "type": "string", "pattern": "^[0-9]{3}-[a-z0-9-]+$" },
+    "type": { "enum": ["story", "bug", "spike", "epic"] },
+    "title": { "type": "string", "minLength": 5, "maxLength": 120 },
+    "jira": { "$ref": "#/$defs/jira" },
+    "refines": { "$ref": "#/$defs/refines" },
+    "user_story": { "$ref": "#/$defs/user_story" },
+    "context": { "type": "string", "minLength": 1 },
+    "acceptance_criteria": { "type": "array", "items": { "$ref": "#/$defs/ac" } },
+    "tech_notes": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "api_impact": { "type": "array", "items": { "$ref": "#/$defs/api_change" } },
+    "out_of_scope": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "dependencies": { "type": "array", "items": { "$ref": "#/$defs/dependency" } },
+    "assumptions": { "type": "array", "items": { "$ref": "#/$defs/assumption" } },
+    "open_questions": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "risk_flags": { "type": "array", "items": { "$ref": "#/$defs/flag" } },
+    "bug": { "$ref": "#/$defs/bug" },
+    "spike": { "$ref": "#/$defs/spike" },
+    "epic": { "$ref": "#/$defs/epic" },
+    "sources": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/source" } },
+    "extra": { "type": "object" },
+    "meta": { "$ref": "#/$defs/meta" }
+  },
+  "allOf": [
+    { "if": { "properties": { "type": { "const": "story" } } }, "then": { "required": ["user_story", "context"], "properties": { "acceptance_criteria": { "minItems": 2 } } } },
+    { "if": { "properties": { "type": { "const": "bug" } } }, "then": { "required": ["bug", "context"], "properties": { "acceptance_criteria": { "minItems": 2 } } } },
+    { "if": { "properties": { "type": { "const": "spike" } } }, "then": { "required": ["spike", "context"], "properties": { "acceptance_criteria": { "minItems": 1 } } } },
+    { "if": { "properties": { "type": { "const": "epic" } } }, "then": { "required": ["epic", "context"] } }
+  ],
+  "$defs": {
+    "jira_key": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]+-[0-9]+$" },
+    "flag": { "enum": ["pii", "auth", "payments", "audit", "regulatory", "data-migration", "breaking-contract", "third-party", "product-decision"] },
+    "jira": { "type": "object", "additionalProperties": false, "required": ["issue_type"], "properties": {
+      "key": { "type": ["string", "null"], "pattern": "^[A-Z][A-Z0-9_]+-[0-9]+$" },
+      "issue_type": { "enum": ["Story", "Bug", "Spike", "Epic", "Task"] },
+      "project_key": { "type": "string" }, "parent_key": { "type": ["string", "null"] },
+      "labels": { "type": "array", "items": { "type": "string" } },
+      "components": { "type": "array", "items": { "type": "string" } },
+      "links": { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": ["relation", "key"],
+        "properties": { "relation": { "type": "string" }, "key": { "$ref": "#/$defs/jira_key" } } } } } },
+    "refines": { "type": "object", "additionalProperties": false, "required": ["key", "changes"], "properties": {
+      "key": { "$ref": "#/$defs/jira_key" },
+      "changes": { "type": "array", "minItems": 1, "items": { "type": "object", "additionalProperties": false, "required": ["field", "summary", "reason"],
+        "properties": { "field": { "type": "string" }, "summary": { "type": "string" }, "reason": { "type": "string" } } } } } },
+    "user_story": { "type": "object", "additionalProperties": false, "required": ["as_a", "i_want", "so_that"], "properties": {
+      "as_a": { "type": "string", "minLength": 3 }, "i_want": { "type": "string", "minLength": 3 }, "so_that": { "type": "string", "minLength": 3 } } },
+    "ac": { "type": "object", "additionalProperties": false, "required": ["id", "given", "when", "then"], "properties": {
+      "id": { "type": "string", "pattern": "^AC[0-9]+$" }, "title": { "type": "string" },
+      "given": { "type": "string", "minLength": 3 }, "when": { "type": "string", "minLength": 3 }, "then": { "type": "string", "minLength": 3 },
+      "and": { "type": "array", "items": { "type": "string", "minLength": 3 } },
+      "kind": { "enum": ["happy", "edge", "error", "security", "regression", "deliverable"] } } },
+    "api_change": { "type": "object", "additionalProperties": false, "required": ["contract", "operation", "change", "breaking"], "properties": {
+      "contract": { "type": "string", "pattern": "^[a-z0-9-]+:.+$" },
+      "operation": { "type": "string", "pattern": "^(GET|POST|PUT|PATCH|DELETE) /" },
+      "change": { "enum": ["none", "add", "modify", "remove"] }, "breaking": { "enum": ["yes", "no", "unknown"] },
+      "detail": { "type": "string" } } },
+    "dependency": { "type": "object", "additionalProperties": false, "required": ["ref", "kind", "reason"], "properties": {
+      "ref": { "type": "string", "minLength": 1 }, "kind": { "enum": ["blocked-by", "blocks", "relates", "external"] },
+      "reason": { "type": "string", "minLength": 3 } } },
+    "assumption": { "type": "object", "additionalProperties": false, "required": ["text", "kind"], "properties": {
+      "text": { "type": "string", "minLength": 3 }, "kind": { "enum": ["product", "technical"] } } },
+    "bug": { "type": "object", "additionalProperties": false, "required": ["observed", "expected", "steps"], "properties": {
+      "observed": { "type": "string", "minLength": 3 }, "expected": { "type": "string", "minLength": 3 },
+      "steps": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+      "environment": { "type": "string" }, "evidence": { "type": "array", "items": { "type": "string" } } } },
+    "spike": { "type": "object", "additionalProperties": false, "required": ["question", "outputs"], "properties": {
+      "question": { "type": "string", "minLength": 10 }, "approach": { "type": "array", "items": { "type": "string" } },
+      "outputs": { "type": "array", "minItems": 1, "items": { "type": "string" } } } },
+    "epic": { "type": "object", "additionalProperties": false, "required": ["goal", "children"], "properties": {
+      "goal": { "type": "string", "minLength": 10 }, "success_criteria": { "type": "array", "items": { "type": "string" } },
+      "children": { "type": "array", "minItems": 2, "items": { "type": "object", "additionalProperties": false,
+        "required": ["ref", "type", "title", "summary", "order"], "properties": {
+          "ref": { "type": "string", "pattern": "^C[0-9]+$" }, "type": { "enum": ["story", "bug", "spike"] },
+          "title": { "type": "string", "minLength": 5, "maxLength": 120 }, "summary": { "type": "string", "minLength": 20 },
+          "depends_on": { "type": "array", "items": { "type": "string", "pattern": "^C[0-9]+$" } },
+          "order": { "type": "integer", "minimum": 1 } } } } } },
+    "source": { "type": "object", "additionalProperties": false, "required": ["kind", "ref"], "properties": {
+      "kind": { "enum": ["code", "openapi", "jira", "doc", "idea", "rework"] }, "ref": { "type": "string", "minLength": 1 }, "note": { "type": "string" } } },
+    "meta": { "type": "object", "additionalProperties": false, "required": ["round"], "properties": {
+      "round": { "type": "integer", "minimum": 1 }, "blocked": { "type": ["string", "null"] },
+      "revision_log": { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": ["round", "finding", "action"],
+        "properties": { "round": { "type": "integer" }, "finding": { "type": "string" }, "action": { "type": "string" } } } } } }
+  }
+}

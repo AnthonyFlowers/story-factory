@@ -1,0 +1,8 @@
+factory/jobs/*
+!factory/jobs/.gitkeep
+factory/backlog.md
+factory.config.json
+templates/local/*
+!templates/local/.gitkeep
+.claude/settings.local.json
+__pycache__/

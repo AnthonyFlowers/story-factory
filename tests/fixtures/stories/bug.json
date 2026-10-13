@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "id": "005-statements-500-empty",
+  "type": "bug",
+  "title": "Statements list returns 500 for an account with no statements",
+  "jira": {
+    "key": "DEMO-102",
+    "issue_type": "Bug",
+    "project_key": "DEMO",
+    "labels": [],
+    "components": [
+      "accounts-api"
+    ],
+    "links": []
+  },
+  "context": "`StatementController.find` reads `statements[0].currency` to build the response envelope.",
+  "bug": {
+    "observed": "GET /accounts/{accountId}/statements returns 500: TypeError reading 'currency' of undefined",
+    "expected": "200 with an empty items array",
+    "steps": [
+      "Create an account with no statements",
+      "Call GET /accounts/{accountId}/statements as its owner"
+    ],
+    "environment": "accounts-api main, local",
+    "evidence": [
+      "Stack trace in DEMO-102"
+    ]
+  },
+  "acceptance_criteria": [
+    {
+      "id": "AC1",
+      "kind": "happy",
+      "given": "account A has no statements",
+      "when": "its owner calls GET /accounts/A/statements",
+      "then": "the response is 200 with body {\"items\": []}"
+    },
+    {
+      "id": "AC2",
+      "kind": "regression",
+      "given": "account A has one statement",
+      "when": "its owner calls GET /accounts/A/statements",
+      "then": "the response is the same as before the fix"
+    }
+  ],
+  "tech_notes": [
+    "Add a regression test beside the existing controller acceptance tests."
+  ],
+  "api_impact": [
+    {
+      "contract": "accounts-api:openapi.json",
+      "operation": "GET /accounts/{accountId}/statements",
+      "change": "none",
+      "breaking": "no",
+      "detail": "Contract already allows an empty items array."
+    }
+  ],
+  "out_of_scope": [
+    "Changing the envelope shape"
+  ],
+  "dependencies": [],
+  "open_questions": [],
+  "risk_flags": [],
+  "sources": [
+    {
+      "kind": "jira",
+      "ref": "DEMO-102"
+    },
+    {
+      "kind": "code",
+      "ref": "accounts-api:src/controllers/statement.controller.ts"
+    }
+  ],
+  "meta": {
+    "round": 1,
+    "blocked": null,
+    "revision_log": []
+  }
+}

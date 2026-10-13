@@ -1,0 +1,26 @@
+{
+  "name": "default",
+  "sections": [
+    { "id": "user_story", "heading": null, "field": "user_story", "style": "user-story", "types": ["story"] },
+    { "id": "context", "heading": "Context", "field": "context", "style": "paragraph", "types": ["story", "bug", "spike", "epic"] },
+    { "id": "bug", "heading": "Bug details", "field": "bug", "style": "bug", "types": ["bug"] },
+    { "id": "spike", "heading": "Spike", "field": "spike", "style": "spike", "types": ["spike"] },
+    { "id": "epic", "heading": "Goal and children", "field": "epic", "style": "epic", "types": ["epic"] },
+    { "id": "acceptance_criteria", "heading": "Acceptance criteria", "field": "acceptance_criteria", "style": "gwt", "types": ["story", "bug", "spike", "epic"] },
+    { "id": "tech_notes", "heading": "Technical notes", "field": "tech_notes", "style": "bullets", "types": ["story", "bug", "spike"] },
+    { "id": "api_impact", "heading": "API impact", "field": "api_impact", "style": "api", "types": ["story", "bug"] },
+    { "id": "out_of_scope", "heading": "Out of scope", "field": "out_of_scope", "style": "bullets", "types": ["story", "bug", "spike", "epic"] },
+    { "id": "dependencies", "heading": "Dependencies", "field": "dependencies", "style": "deps", "types": ["story", "bug", "spike", "epic"] },
+    { "id": "refines", "heading": "Changes from the original ticket", "field": "refines", "style": "refines", "types": ["story", "bug", "spike"] }
+  ],
+  "custom_sections": [],
+  "definition_of_ready": [
+    { "id": "DOR1", "text": "The user story names a real role, capability and benefit", "check": "auto:user_story" },
+    { "id": "DOR2", "text": "At least two Given/When/Then ACs (one for a spike)", "check": "auto:ac_count" },
+    { "id": "DOR3", "text": "Every API change names a contract operation", "check": "auto:api_refs" },
+    { "id": "DOR4", "text": "Every source reference exists", "check": "auto:sources_exist" },
+    { "id": "DOR5", "text": "No open questions", "check": "auto:no_open_questions" },
+    { "id": "DOR6", "text": "Dependencies are listed or explicitly none", "check": "review" },
+    { "id": "DOR7", "text": "Small enough for one sprint, judged without an estimate", "check": "review" }
+  ]
+}

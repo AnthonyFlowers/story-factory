@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "story-factory/job.schema.json",
+  "title": "story-factory job",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "type", "mode", "stage", "round"],
+  "properties": {
+    "id": { "type": "string" },
+    "type": { "enum": ["story", "bug", "spike", "epic"] },
+    "mode": { "enum": ["new", "refine"] },
+    "harness": { "enum": ["claude", "copilot-lite"] },
+    "idea": { "type": "string" },
+    "jira_key": { "type": ["string", "null"] },
+    "parent": { "type": ["string", "null"] },
+    "children": { "type": "object", "additionalProperties": { "type": "string" } },
+    "title": { "type": ["string", "null"] },
+    "stage": { "enum": ["intake", "draft", "review", "approve", "children", "ready", "needs-human"] },
+    "round": { "type": "integer", "minimum": 0 },
+    "revisions_used": { "type": "integer", "minimum": 0, "maximum": 1 },
+    "reviews": { "type": "object", "additionalProperties": false, "properties": {
+      "invest": { "$ref": "#/$defs/verdict" },
+      "ac": { "$ref": "#/$defs/verdict" },
+      "tech": { "$ref": "#/$defs/verdict" },
+      "security": { "$ref": "#/$defs/verdict" } } },
+    "flags": { "type": "array", "items": { "type": "string" } },
+    "decision": { "enum": [null, "READY", "NEEDS-HUMAN"] },
+    "approved_by": { "enum": [null, "agent", "human"] },
+    "gate_reasons": { "type": "array", "items": { "type": "string" } },
+    "writer_agent": { "type": ["string", "null"] },
+    "claimed_by": { "type": ["string", "null"] },
+    "created": { "type": "string" },
+    "updated": { "type": "string" }
+  },
+  "$defs": {
+    "verdict": { "enum": ["pending", "PASS", "CHANGES", "INVALID"] }
+  }
+}

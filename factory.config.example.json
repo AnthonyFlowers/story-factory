@@ -1,0 +1,38 @@
+{
+  "jira": {
+    "skill": "pull-jira-ticket",
+    "project_key": "ABC",
+    "follow_links": 1,
+    "max_tickets": 8
+  },
+  "repos": [
+    {
+      "name": "accounts-api",
+      "path": "/Users/me/work/accounts-api",
+      "openapi": [
+        "openapi.json"
+      ],
+      "docs": [
+        "docs"
+      ],
+      "notes": "LoopBack 4 service"
+    }
+  ],
+  "team_docs": [
+    {
+      "name": "team-docs",
+      "path": "/Users/me/work/team-handbook"
+    }
+  ],
+  "deny_read": [],
+  "template": "default",
+  "escalation": {
+    "always_human": [
+      "pii",
+      "auth",
+      "payments",
+      "regulatory"
+    ],
+    "extra_terms": []
+  }
+}

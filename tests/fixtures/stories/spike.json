@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "id": "006-spike-statement-pdf",
+  "type": "spike",
+  "title": "Spike: render statement PDFs inside accounts-api",
+  "context": "Customers ask support for PDF statements. accounts-api has no document generation today.",
+  "spike": {
+    "question": "Can accounts-api render a statement PDF with a library on the team's approved list, without a new service?",
+    "approach": [
+      "Check team-docs:approved-dependencies.md",
+      "Prototype one statement on a throwaway branch"
+    ],
+    "outputs": [
+      "A one-page decision note with one recommendation",
+      "A sample PDF made from fixture data"
+    ]
+  },
+  "acceptance_criteria": [
+    {
+      "id": "AC1",
+      "kind": "deliverable",
+      "given": "the spike is finished",
+      "when": "the team reads the decision note",
+      "then": "it names one option, its licence, and whether a new service is needed"
+    }
+  ],
+  "out_of_scope": [
+    "Production code",
+    "Storage of generated PDFs"
+  ],
+  "dependencies": [],
+  "open_questions": [],
+  "risk_flags": [],
+  "sources": [
+    {
+      "kind": "idea",
+      "ref": "brief"
+    },
+    {
+      "kind": "doc",
+      "ref": "team-docs:approved-dependencies.md"
+    }
+  ],
+  "meta": {
+    "round": 1,
+    "blocked": null,
+    "revision_log": []
+  }
+}

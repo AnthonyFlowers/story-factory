@@ -1,0 +1,15 @@
+#!/bin/sh
+# Refuse to commit runtime state, local config or local templates.
+bad=$(git diff --cached --name-only --diff-filter=ACMR | grep -E \
+  -e '^factory/jobs/' \
+  -e '^factory/backlog\.md$' \
+  -e '^factory\.config\.json$' \
+  -e '^templates/local/' \
+  -e '^\.claude/settings\.local\.json$' \
+  | grep -v -E -e '^factory/jobs/\.gitkeep$' -e '^templates/local/\.gitkeep$')
+if [ -n "$bad" ]; then
+  echo "pre-commit: refusing to commit local or runtime files:" >&2
+  echo "$bad" | sed 's/^/  /' >&2
+  exit 1
+fi
+exit 0
