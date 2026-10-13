@@ -8,7 +8,7 @@ import os
 import re
 from types import SimpleNamespace
 
-from . import SFError, checks, config, jobs, template, verdicts
+from . import SFError, checks, claims, config, jobs, template, verdicts
 
 
 def latest_round(job_path: str) -> int:
@@ -104,4 +104,5 @@ def apply(job_id: str, result: dict) -> str:
             render.run(SimpleNamespace(target=job_id, format="md", out=None))
     except SFError:
         pass  # invalid story: the gate already recorded schema-errors
+    claims.release(job_id)  # ready and needs-human are both terminal
     return jobs.load_job(job_id)["stage"]

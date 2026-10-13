@@ -37,3 +37,7 @@ One file per decision, numbered in order. Format: Date, Status, By, then Decisio
 - [0033. Gate reasons for invalid reviews and NEEDS-HUMAN decisions](0033-gate-reasons-for-invalid-reviews-and-needs-human-d.md) (step-03 subagent)
 - [0034. No-repos test config for checks and gate tests](0034-no-repos-test-config-for-checks-and-gate-tests.md) (coordinator)
 - [0035. Project docs and decisions live in the repo](0035-project-docs-and-decisions-live-in-the-repo.md) (owner)
+- [0036. Claim file format and release points](0036-claim-file-format-and-release-points.md) (step-04 subagent)
+- [0037. Skill derives the job path from brief output](0037-skill-derives-job-path-from-brief-output.md) (step-04 subagent)
+- [0038. Backlog keeps the type prefix on checked lines](0038-backlog-keeps-prefix-on-checked-lines.md) (step-04 subagent)
+- [0039. Rework resets stage to draft; next always records done](0039-rework-resets-stage-to-draft-and-next-always-records-done.md) (step-04 subagent)

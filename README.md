@@ -84,3 +84,16 @@ Only the flags in `escalation.always_human` (default `pii`, `auth`, `payments`, 
 - [docs/design.md](docs/design.md): architecture, schemas, state machine, agents, escalation rules.
 - [docs/steps/](docs/steps/): the build steps 01 to 08, each a standalone spec.
 - [docs/decisions/](docs/decisions/README.md): one file per decision, numbered, with why and how to undo.
+
+## Commands
+
+The `/story` skill (`.claude/skills/story/SKILL.md`) is the orchestrator: start `claude` in this repo and type `/story <idea>`, `/story bug <text>`, `/story spike <q>`, `/story refine KEY`, `/story epic <idea|KEY>`, `/story next`, `/story approve <id>`, `/story rework <id> <note>`, `/story resume <id>` or `/story render <id>`. It only runs `sf.py`, the Jira skill and the agents.
+
+```bash
+python3 scripts/sf.py claim ID [--force] [--who TEXT]   # CLAIMED ID, or BUSY ID <who> <time> and exit 3
+python3 scripts/sf.py release ID
+python3 scripts/sf.py backlog claim                      # LINE<TAB>TYPE<TAB>TEXT of the first "- [ ]" item, or nothing
+python3 scripts/sf.py backlog done LINE ID
+```
+
+`new-job` claims the job it creates, so two sessions never drive one job; `gate --apply` and `escalate` release it. `/story resume`, `approve`, `rework` and `render` claim first and stop on BUSY. The backlog is `factory/backlog.md` (gitignored, copied from `factory/backlog.example.md` on first use) and is locked with `flock`.

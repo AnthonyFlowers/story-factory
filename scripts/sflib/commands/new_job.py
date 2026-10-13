@@ -1,12 +1,14 @@
 from __future__ import annotations
 
-from .. import config, jobs
+from .. import claims, config, jobs
 
 
 def run(args):
     config.load()  # fail early (exit 2) when there is no config
-    print(jobs.new_job(args.type, args.idea, mode=args.mode, jira_key=args.jira_key,
-                       parent=args.parent, harness=args.harness))
+    job_id = jobs.new_job(args.type, args.idea, mode=args.mode, jira_key=args.jira_key,
+                          parent=args.parent, harness=args.harness)
+    claims.claim(job_id)  # the creating session owns the job
+    print(job_id)
 
 
 def register(subparsers):
