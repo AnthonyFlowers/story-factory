@@ -1,0 +1,18 @@
+{
+  "key": "DEMO-103",
+  "issue_type": "Story",
+  "summary": "Export statements CSV for support",
+  "status": "To Do",
+  "description": "Support agents want a CSV export of a customer's statements. The CSV must include the full account number and the customer's home address so they can match it to letters.",
+  "acceptance_criteria": null,
+  "labels": [],
+  "components": [
+    "statements"
+  ],
+  "fix_versions": [],
+  "parent_key": "DEMO-100",
+  "links": [],
+  "subtasks": [],
+  "reporter": "Demo User",
+  "updated": "2026-10-01"
+}

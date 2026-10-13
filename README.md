@@ -31,3 +31,28 @@ python3 scripts/sf.py list
 python3 scripts/sf.py validate path/to/story.json
 python3 scripts/sf.py render ID_OR_PATH
 ```
+
+## Jira
+
+The factory reads Jira through the owner's `pull-jira-ticket` skill (named in
+`config.jira.skill`). It never writes to Jira. `pull-jira-ticket-stub` is a test
+double that serves dummy `DEMO` tickets from `tests/fixtures/jira`.
+
+- **Invocation:** `pull-jira-ticket <ISSUE-KEY>`, key matching `^[A-Z][A-Z0-9_]+-[0-9]+$`.
+- **Read-only:** the factory never calls anything that writes to Jira.
+- **Success:** the issue as JSON or markdown. All three shapes are accepted:
+  the factory's own JSON (`schemas/jira-ticket.schema.json`), raw Jira REST JSON
+  (`{"key": ..., "fields": {...}}`, ADF descriptions flattened), or markdown.
+- **Failure:** the text starts with `ERROR:`.
+- **Saved as:** `context/jira/<KEY>.json` when the output parses as JSON, else `.md`.
+- **Factory side:** `sflib.jira.normalize()` maps the three shapes. The factory reads
+  `key`, `issue_type`, `summary`, `description`, `acceptance_criteria`, `parent_key` and
+  `links[].key`; the rest is passed through to the writer as context.
+
+```bash
+python3 scripts/jira_stub.py DEMO-101 [--format json|md]
+python3 scripts/sf.py jira-keys ID    # keys still to pull; loop: jira-keys, pull each, repeat until empty
+```
+
+`jira-keys` seeds from `job.jira_key` and keys in the idea and `rework-*.md`, follows
+parent and links up to `jira.follow_links` hops, and never exceeds `jira.max_tickets`.

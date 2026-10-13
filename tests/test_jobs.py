@@ -40,7 +40,7 @@ class JobTests(JobsTestCase):
         self.assertEqual(job["stage"], "intake")
         self.assertEqual(job["reviews"], {"invest": "pending", "ac": "pending", "tech": "pending", "security": "pending"})
         brief = open(os.path.join(d, "brief.md")).read()
-        for needle in ("# Brief: " + a, "## Idea", "> Add the service", "## Where to look", "none configured",
+        for needle in ("# Brief: " + a, "## Idea", "> Add the service", "## Where to look", "team docs `team-docs`",
                        "## Jira context", "none yet", "## Template", "## Escalation",
                        "These flags force NEEDS-HUMAN", "## Rules", "No estimates."):
             self.assertIn(needle, brief)

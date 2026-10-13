@@ -1,0 +1,23 @@
+{
+  "key": "DEMO-101",
+  "issue_type": "Story",
+  "summary": "Statement filter",
+  "status": "To Do",
+  "description": "Users want to filter statements. Should work for any dates.",
+  "acceptance_criteria": "Works for any dates",
+  "labels": [],
+  "components": [
+    "statements"
+  ],
+  "fix_versions": [],
+  "parent_key": "DEMO-100",
+  "links": [
+    {
+      "relation": "relates to",
+      "key": "DEMO-102"
+    }
+  ],
+  "subtasks": [],
+  "reporter": "Demo User",
+  "updated": "2026-10-01"
+}

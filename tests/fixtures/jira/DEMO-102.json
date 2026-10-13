@@ -1,0 +1,18 @@
+{
+  "key": "DEMO-102",
+  "issue_type": "Bug",
+  "summary": "Statements 500 for empty account",
+  "status": "To Do",
+  "description": "GET /statements returns 500 for an account with no statements.\n\nTypeError: Cannot read properties of undefined (reading 'currency')\n    at StatementController.find (src/controllers/statement.controller.ts:42:18)",
+  "acceptance_criteria": null,
+  "labels": [],
+  "components": [
+    "statements"
+  ],
+  "fix_versions": [],
+  "parent_key": null,
+  "links": [],
+  "subtasks": [],
+  "reporter": "Demo User",
+  "updated": "2026-10-01"
+}

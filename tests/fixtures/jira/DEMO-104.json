@@ -1,0 +1,27 @@
+{
+  "key": "DEMO-104",
+  "issue_type": "Story",
+  "summary": "Link loop test",
+  "status": "To Do",
+  "description": "Exists to test link cycle handling.",
+  "acceptance_criteria": null,
+  "labels": [],
+  "components": [
+    "statements"
+  ],
+  "fix_versions": [],
+  "parent_key": null,
+  "links": [
+    {
+      "relation": "relates to",
+      "key": "DEMO-101"
+    },
+    {
+      "relation": "relates to",
+      "key": "DEMO-104"
+    }
+  ],
+  "subtasks": [],
+  "reporter": "Demo User",
+  "updated": "2026-10-01"
+}

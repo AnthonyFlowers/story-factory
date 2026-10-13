@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Jira ticket (factory shape)",
+  "type": "object",
+  "required": ["key", "issue_type", "summary"],
+  "additionalProperties": true,
+  "properties": {
+    "key": {"type": "string"},
+    "issue_type": {"type": "string"},
+    "summary": {"type": "string"},
+    "status": {"type": "string"},
+    "description": {"type": "string"},
+    "updated": {"type": "string"},
+    "acceptance_criteria": {"type": ["string", "null"]},
+    "labels": {"type": "array", "items": {"type": "string"}},
+    "components": {"type": "array", "items": {"type": "string"}},
+    "fix_versions": {"type": "array", "items": {"type": "string"}},
+    "parent_key": {"type": ["string", "null"]},
+    "links": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["relation", "key"],
+        "properties": {"relation": {"type": "string"}, "key": {"type": "string"}}
+      }
+    },
+    "subtasks": {"type": "array", "items": {"type": "string"}}
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "key": "DEMO-100",
+  "issue_type": "Epic",
+  "summary": "Statement self-service",
+  "status": "To Do",
+  "description": "Goal: customers find and download their own statements without contacting support.",
+  "acceptance_criteria": null,
+  "labels": [],
+  "components": [
+    "statements"
+  ],
+  "fix_versions": [],
+  "parent_key": null,
+  "links": [],
+  "subtasks": [],
+  "reporter": "Demo User",
+  "updated": "2026-10-01"
+}

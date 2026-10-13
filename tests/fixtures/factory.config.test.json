@@ -6,7 +6,12 @@
     "max_tickets": 8
   },
   "repos": [],
-  "team_docs": [],
+  "team_docs": [
+    {
+      "name": "team-docs",
+      "path": "tests/fixtures/team-docs"
+    }
+  ],
   "deny_read": [],
   "template": "default",
   "escalation": {

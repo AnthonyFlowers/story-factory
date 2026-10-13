@@ -1,0 +1,65 @@
+{
+  "key": "DEMO-105",
+  "fields": {
+    "issuetype": {
+      "name": "Story"
+    },
+    "summary": "Statement date presets",
+    "status": {
+      "name": "To Do"
+    },
+    "description": {
+      "type": "doc",
+      "version": 1,
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Add quick date presets to the statement filter."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Presets: last 30 days, last 90 days, this year."
+            }
+          ]
+        }
+      ]
+    },
+    "labels": [
+      "ux"
+    ],
+    "components": [
+      {
+        "name": "statements"
+      }
+    ],
+    "parent": {
+      "key": "DEMO-100"
+    },
+    "issuelinks": [
+      {
+        "type": {
+          "name": "Relates",
+          "inward": "relates to",
+          "outward": "relates to"
+        },
+        "outwardIssue": {
+          "key": "DEMO-101"
+        }
+      }
+    ],
+    "subtasks": [],
+    "fixVersions": [],
+    "updated": "2026-10-01T09:00:00.000+0000",
+    "reporter": {
+      "displayName": "Demo User"
+    }
+  }
+}
