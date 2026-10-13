@@ -83,6 +83,7 @@ class ClaimTests(JobsTestCase):
         self.assertEqual(r.returncode, 0, r.stderr)
         self.assertFalse(os.path.exists(os.path.join(self.jobs, jid, ".claim")))
         self.assertIsNone(self.job(jid)["claimed_by"])
+        self.assertEqual(self.job(jid)["gate_reasons"], ["escalated: test"])
 
 
 class GateReleaseTests(test_gate.GateTests):

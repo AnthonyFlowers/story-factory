@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import os
 
 from .. import claims, jobs
@@ -9,7 +10,9 @@ def run(args):
     jp = jobs.job_dir(args.id)
     text = "NEEDS-HUMAN\nFLAGS: none\n\n## Why\n%s\n\n## For the human\n1. %s\n" % (args.why, args.why)
     jobs.atomic_write(os.path.join(jp, "decision.md"), text)
-    jobs.update_job(args.id, stage="needs-human", decision="NEEDS-HUMAN")
+    reason = "escalated: " + " ".join(args.why.split())[:120]
+    jobs.update_job(args.id, stage="needs-human", decision="NEEDS-HUMAN",
+                    sets=["gate_reasons=" + json.dumps([reason])])
     claims.release(args.id)
     print("needs-human")
     return 0
