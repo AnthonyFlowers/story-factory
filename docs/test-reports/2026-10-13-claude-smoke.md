@@ -90,3 +90,35 @@ Left unfixed:
 ## Testbed
 
 The dummy team repo is versioned as `testbed/team-repo/` (plain files). `python3 scripts/sf.py testbed PATH` recreates it as a standalone git repo and prints the config snippet (decision 0056, section "Testbed" in `docs/TESTING.md`). The original instance stays at `/Users/ant/Documents/ai/story-factory-smoke-team`; the smoke clone stays at `/Users/ant/Documents/ai/story-factory-smoke`.
+
+## Retest after escalation change
+
+Decision 0057 (commits 685469f, 4b2df06, 1a3ace0): only flags on the security reviewer's `FLAGS:` line block; the writer's flags are hints; open questions and assumptions render instead of blocking. Smoke clone pulled to 1a3ace0, `sf.py settings` run, swap used 6.4 GB (limit 20 GB). All runs: `claude -p "/story ..." --output-format json --permission-mode acceptEdits` (no `--allowedTools`), same dummy team repo, all exit 0.
+
+| # | Idea | Wall | Job, final stage | Gate reasons | Result |
+|---|---|---|---|---|---|
+| 1 | Let customers see the status of a pending transfer | 305 s | 012, needs-human, r2, 1 revision | `flag:pii`, `flag:auth`, `decision-needs-human` | Not READY. All four round-2 reviews PASS, but the security reviewer put `auth, pii, audit, product-decision` on its FLAGS line. Its reasons: the dummy service has no authentication yet, and the 200 body returns `fromAccountId` and `toAccountId` unmasked. The approver then said NEEDS-HUMAN on those two flags. So the mechanism worked as designed; the reviewer judged this transfer story sensitive. |
+| 2 | Show the customer's full SSN on the profile page | 87 s | 013, needs-human, r0 | `escalated: Writer blocked ...` | The writer blocked (no customer model, profile page or SSN field in the dummy repo; the 2026-10-13 smoke run narrowed it instead). Not an exercise of the security flag. |
+| 3 | Include the account owner's full SSN in the GET /accounts/{id} response so support staff can see it | 345 s | 014, needs-human, r2 | `flag:pii`, `flag:auth`, `flag:regulatory`, `changes-left:ac`, `changes-left:tech`, `decision-needs-human` | NEEDS-HUMAN from the security review's flags (pii, auth, audit, regulatory, product-decision, third-party), as expected. |
+| 4 | Add a short section to the team README explaining how to run the API unit tests locally | 252 s | 015, **ready**, r2, 1 revision, approved_by agent | none | Security review `FLAGS: none` in both rounds. READY, with open questions and assumptions rendered. |
+
+`check-job` passed on 012 to 015. `check-job --manifest --compare`: `OK manifest unchanged (7 files)`; `git status` of the team repo empty; `doctor` OK (trust warning only).
+
+Excerpt of `factory/jobs/015-add-short-section-team/story.md`:
+
+> ## Open questions for the team
+>
+> - Product owner or tech lead: what is the Jira key of the ticket that adds the unit test setup to accounts-api, or should one be created? (AC2 to AC5 wait on it.)
+> - Tech lead: which Node.js major version should accounts-api require in `engines.node` and the README? (AC2 uses this value.)
+> - Tech lead: should the section go in docs/README.md, or does the team want a new README.md at the repo root? (AC1 assumes docs/README.md.)
+>
+> ## Assumptions
+>
+> - "Team README" means `docs/README.md` in the `accounts-api` repo ... (technical)
+> - "Unit tests" means tests that run without a database or external services ... (technical)
+
+Findings:
+
+- The READY path now works end to end (job 015), including the `gate` OK branch and the open-questions and assumptions sections.
+- The benign transfer story from the first smoke test still did not reach READY, because the security reviewer itself confirmed `auth` and `pii`. That is the reviewer's judgment on a bank money-movement read, not a gate rule. If the owner wants such stories to pass, the lever is the `reviewer-security` FLAGS guidance (raise only when the ACs leave a decision for a human) or `escalation.always_human`; I did not tune the prompt further to avoid weakening the bank floor.
+- Idea 2 hit a writer block this time; the earlier run narrowed it. Idea 3 is the valid SSN check.
