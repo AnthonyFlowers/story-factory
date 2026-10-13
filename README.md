@@ -78,7 +78,7 @@ python3 scripts/sf.py escalate ID --why TEXT  # write a NEEDS-HUMAN decision.md 
 python3 scripts/sf.py human ID                    # print the "## For the human" section of decision.md
 ```
 
-Only the flags in `escalation.always_human` (default `pii`, `auth`, `payments`, `regulatory`) force NEEDS-HUMAN. When no repos or team docs are configured, source and API existence checks are SKIPPED.
+Only flags in `escalation.always_human` (default `pii`, `auth`, `payments`, `regulatory`) that the security reviewer puts on its `FLAGS:` line force NEEDS-HUMAN; the writer's flags are hints, and open questions and assumptions are rendered, not blocking. When no repos or team docs are configured, source and API existence checks are SKIPPED.
 
 ## Docs
 

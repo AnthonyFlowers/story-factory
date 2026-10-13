@@ -55,7 +55,7 @@ The factory has no code, build, merge or Jira write. A story ends READY, meaning
            ┌──────────────────┐
            │  story-approver  │ opus → decision.md (READY | NEEDS-HUMAN + checklist)
            └────────┬─────────┘
-                    ▼ sf.py gate --apply (deterministic floor: bank flags, open questions, CHANGES left)
+                    ▼ sf.py gate --apply (deterministic floor: security reviewer's flags, CHANGES left, invalid reviews)
         READY ──────┴────── NEEDS-HUMAN ◄── /story approve <id>  (→ READY, approved_by human)
           │                      └───────── /story rework <id> <note> (→ writer, fresh revision)
           ▼
@@ -482,7 +482,7 @@ The orchestrator is the only writer of `job.json`, and it always writes through 
 - `mode` is `new` or `refine`.
 - `harness` is `claude` or `copilot-lite`.
 - `reviews` holds the current round only; earlier rounds live in their `round-N/` folders.
-- `flags` is the union of `story.risk_flags`, the final round's review `FLAGS` lines and the decision's `FLAGS` line.
+- `flags` is the union of `story.risk_flags`, the final round's review `FLAGS` lines and the decision's `FLAGS` line. It is a record; only the security review's `FLAGS` line blocks (section 9).
 
 ## 8. Verdict formats
 
@@ -540,13 +540,13 @@ There are two layers.
 - **third-party**: adds a vendor, an outbound call or new data sharing.
 - **product-decision**: carries a product-kind assumption, or covers pricing, eligibility, or customer-facing legal or marketing copy.
 
-It also marks NEEDS-HUMAN when there are open questions, when CHANGES remain after round 2, or when reviewers disagree.
+Since decision 0057 the list above is what the security reviewer judges; the approver marks NEEDS-HUMAN when the security review raises a blocking flag, when CHANGES remain after round 2, or when reviewers disagree. Open questions and assumptions do not block.
 
 **2. `sf.py gate --apply` (deterministic floor)** forces `needs-human` and records `gate_reasons`, even when `decision.md` says READY, if any of these hold:
-- the union of flags meets `config.escalation.always_human`. By default that is all nine flags.
-- `open_questions` is non-empty.
-- an assumption has `kind: product`.
+- the final-round `review-security.md` `FLAGS:` line meets `config.escalation.always_human` (default `pii`, `auth`, `payments`, `regulatory`). This is the only flag source that blocks. The writer's `risk_flags`, other reviewers' flags and the decision's flags are recorded in `job.json` `flags` but never block.
+- any final-round review is missing or invalid, which includes a missing `FLAGS:` line (the safe default is a human).
 - any final-round review says CHANGES.
+- `decision.md` is missing or invalid, or says NEEDS-HUMAN (the approver's own escalation).
 - `checks.md` reports a schema error or a MISSING source.
 - a `config.escalation.extra_terms` word appears anywhere in `story.json`. This matching is case-insensitive.
 
@@ -692,7 +692,7 @@ How it works:
 
 ## 17. Risks
 
-1. **Escalation fatigue.** Every flag escalates by default, so many real stories will end NEEDS-HUMAN. Each one still has a complete draft and pointed questions. Open question Q1 below covers this.
+1. **Escalation fatigue.** Decision 0057 limits blocking to flags the security reviewer raises, so benign stories can reach READY. The risk moves to that reviewer: if it under-flags, a sensitive story is READY. Open questions and assumptions travel with READY stories in the markdown, so the team sees them.
 2. **Invented code or API facts.** Mitigated by mandatory `sources`, the existence checks in `checks.md`, and the tech reviewer re-checking refs. This is still weakest for behaviour that is not visible in code.
 3. **Work data leaking into the personal repo.** Mitigated by gitignore, the pre-commit hook, `sf.py doctor`, and the rule that fixtures are dummy only. The risk is still real if someone `git add -f`s.
 4. **Prompt injection from ticket or code text.** Agents treat context as data; they have no Bash or web, they write one file each, and team repos are Edit-denied. This is not OS-level enforcement: a Python script could still write anywhere, and only the sandbox would stop it.
@@ -704,8 +704,8 @@ How it works:
 
 ## 18. Open questions for the owner (AskUserQuestion-ready)
 
-1. **Bank flags.** How strict should automatic escalation be?
-   - (a) Any flag → NEEDS-HUMAN (current default).
+1. **Bank flags.** Decided 2026-10-13 (decision 0057): option (c), only flags raised by the security reviewer force it.
+   - (a) Any flag → NEEDS-HUMAN.
    - (b) Only pii, auth, payments and regulatory force it; the others are just noted.
    - (c) Only flags raised by the security reviewer force it.
 2. **Jira fields.** Which extra Jira fields should `story.json` carry beyond labels, components, parent and links? (multi-select)
