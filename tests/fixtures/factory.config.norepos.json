@@ -1,0 +1,21 @@
+{
+  "jira": {
+    "skill": "pull-jira-ticket-stub",
+    "project_key": "DEMO",
+    "follow_links": 1,
+    "max_tickets": 8
+  },
+  "repos": [],
+  "team_docs": [],
+  "deny_read": [],
+  "template": "default",
+  "escalation": {
+    "always_human": [
+      "pii",
+      "auth",
+      "payments",
+      "regulatory"
+    ],
+    "extra_terms": []
+  }
+}

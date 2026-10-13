@@ -23,7 +23,7 @@ class GateTests(unittest.TestCase):
         os.makedirs(self.jobs)
         self.job = os.path.join(self.jobs, "900-sample")
         shutil.copytree(SAMPLE, self.job)
-        self.cfg = helpers.TEST_CONFIG
+        self.cfg = helpers.NOREPOS_CONFIG
         self.sf("checks", "900-sample", "--round", "1")
         for lens in ("invest", "ac", "tech", "security"):
             shutil.copy(os.path.join(REV, "pass.md"), os.path.join(self.job, "round-1", "review-%s.md" % lens))
@@ -122,7 +122,7 @@ class GateTests(unittest.TestCase):
         self.assertEqual(self.job_json()["stage"], "needs-human")
 
     def test_extra_terms_and_default_always_human(self):
-        with open(helpers.TEST_CONFIG) as f:
+        with open(helpers.NOREPOS_CONFIG) as f:
             cfg = json.load(f)
         cfg["escalation"]["extra_terms"] = ["Wire Transfer"]
         self.cfg = os.path.join(self.tmp, "c.json")

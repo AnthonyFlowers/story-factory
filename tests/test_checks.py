@@ -17,7 +17,7 @@ class ChecksTestCase(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, self.tmp, True)
-        self.cfg_path = helpers.TEST_CONFIG
+        self.cfg_path = helpers.NOREPOS_CONFIG
         self.configure()
         self.jobs = os.path.join(self.tmp, "jobs")
         os.makedirs(self.jobs)
