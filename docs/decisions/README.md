@@ -48,3 +48,6 @@ One file per decision, numbered in order. Format: Date, Status, By, then Decisio
 - [0044. Lite prompt claims jobs like the Claude skill](0044-lite-prompt-claims-before-resume-approve-rework-render.md) (step-07 subagent)
 - [0045. Lite gets a children command that runs one child at a time](0045-lite-children-loop-one-at-a-time.md) (step-07 subagent)
 - [0046. Prompt test checks the file text only](0046-lite-prompt-test-checks-text-not-vscode.md) (step-07 subagent)
+- [0047. E2E dry run deferred to the owner's manual test](0047-e2e-dry-run-deferred-to-owner-manual-test.md) (owner)
+- [0048. check-job built without the dummy demo repo fixture](0048-check-job-without-demo-repo-fixture.md) (coordinator)
+- [0049. check-job rules and manifest scope](0049-check-job-rules-and-manifest-scope.md) (step-08 subagent)

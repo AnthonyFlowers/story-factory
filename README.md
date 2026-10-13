@@ -115,3 +115,13 @@ python3 scripts/sf.py epic-status EPIC_ID [--apply] # one line per child, then A
 `.github/prompts/story-lite.prompt.md` is a fallback for VS Code GitHub Copilot (agent mode). Open the repo folder and type `/story-lite <idea>` (also `bug`, `spike`, `epic`, `refine`, `children`, `resume`, `approve`, `rework`, `render`). It plays the writer, the four reviewers (security, tech, ac, invest) and the approver in one chat, then runs `sf.py gate --apply`. The job folder is the same as the Claude `/story` skill's, with `"harness": "copilot-lite"` in `job.json`. It never writes to Jira; when a ticket is missing it stops and asks you to save your Jira skill output under `context/jira/` and run `/story-lite resume <id>`. Epic children are created with `spawn-children`; run them in separate chats or Claude sessions.
 
 Manual test (not yet run): copy `tests/fixtures/factory.config.test.json` to `factory.config.json`, run `/story-lite bug DEMO-102 statements 500 for empty accounts`, save `python3 scripts/jira_stub.py DEMO-102` output to the path it asks for, then `/story-lite resume <id>`. Record here: whether `tools: [...]` was accepted, whether Copilot asked for terminal approval on each `sf.py` call, and the model used.
+
+## Testing
+
+`docs/TESTING.md` is the manual test plan for the work laptop (real Jira, real team repos). After each test, check the job with `sf.py check-job`:
+
+```bash
+python3 scripts/sf.py check-job ID [--allow-running]   # OK / FAIL lines, then RESULT: PASS|FAIL (exit 0|1)
+python3 scripts/sf.py check-job --manifest             # before testing: hash every configured repo and team-docs file
+python3 scripts/sf.py check-job --manifest --compare   # after testing: OK manifest unchanged
+```
