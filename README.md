@@ -65,3 +65,16 @@ python3 scripts/sf.py dashboard [--port 8765]   # http://127.0.0.1:8765/dashboar
 
 Read-only board of `factory/jobs/` that polls every 2 s. It needs no network. `--jobs-dir DIR` serves a
 folder holding `dashboard.html` and `jobs/`; `python3 tests/make_demo_jobs.py DIR` builds one with fake jobs.
+
+## Agents, checks and gate
+
+Six Claude Code subagents live in `.claude/agents/`: `story-writer`, `reviewer-invest`, `reviewer-ac`, `reviewer-tech`, `reviewer-security` and `story-approver`. Each is given `Job folder: <abs job dir>. Repo root: <abs factory root>.`, reads files only, and writes exactly one file. They have no Bash, Edit, web or Agent tools.
+
+```bash
+python3 scripts/sf.py checks ID --round N     # snapshot story.json to round-N/, write round-N/checks.md
+python3 scripts/sf.py verdict FILE            # parse a review or decision: "PASS flags=pii,auth" or "INVALID <reason>"
+python3 scripts/sf.py gate ID [--apply]       # bank escalation floor: "OK" or "HUMAN: <reasons>"
+python3 scripts/sf.py escalate ID --why TEXT  # write a NEEDS-HUMAN decision.md and set the stage
+```
+
+Only the flags in `escalation.always_human` (default `pii`, `auth`, `payments`, `regulatory`) force NEEDS-HUMAN. When no repos or team docs are configured, source and API existence checks are SKIPPED.
