@@ -8,7 +8,7 @@ tools: ['read', 'search', 'edit', 'execute']
 
 # /story-lite
 
-Arguments: `${input:args}` (the text typed after `/story-lite`). Run every command from the repo root. `ID` is the job id and `<job>` is the absolute job folder. Shell variables do not survive between terminal calls, so remember the id that `new-job` prints and pass it explicitly. `python3 scripts/sf.py brief ID` prints the absolute path of `<job>/brief.md`; its directory is `<job>`. The repo root is the output of `pwd`.
+Arguments: the text the user typed after `/story-lite` in the chat message. If there is none, ask for it (`${input:args:<idea> | bug <text> | refine <KEY> | ...}`). Run every command from the repo root. `ID` is the job id and `<job>` is the absolute job folder. Shell variables do not survive between terminal calls, so remember the id that `new-job` prints and pass it explicitly. `python3 scripts/sf.py brief ID` prints the absolute path of `<job>/brief.md`; its directory is `<job>`. The repo root is the output of `pwd`.
 
 ## 1. Read first
 
