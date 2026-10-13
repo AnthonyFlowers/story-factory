@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; connect-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:; base-uri 'none'; form-action 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>story-factory</title>
+<style>
+:root{--bg:#0f1115;--panel:#171a21;--card:#1e222b;--line:#2c313c;--text:#e4e7ee;--muted:#8b93a3;
+--accent:#ff5a4d;--pass:#3fb86b;--warn:#e5a52b;--bad:#e5484d;--grey:#5b6372;--blue:#5b9dff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+header{display:flex;gap:12px;align-items:baseline;padding:12px 16px;border-bottom:1px solid var(--line)}
+header h1{font-size:16px;margin:0}
+#status{color:var(--muted);font-size:12px}
+#status.err{color:var(--bad)}
+#board{display:flex;gap:12px;padding:12px;overflow-x:auto;align-items:flex-start}
+.col{flex:1 0 190px;min-width:190px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px}
+.col h2{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:2px 4px 8px;display:flex;justify-content:space-between}
+.col.needs-human{border:2px solid var(--accent)}
+.col.needs-human h2{color:var(--accent);font-weight:700}
+.card{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:8px;margin-bottom:8px;cursor:pointer}
+.card:hover{border-color:var(--blue)}
+.card.needs-human{border:2px solid var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.cid{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;color:var(--muted);word-break:break-all}
+.title{margin:4px 0;font-weight:600}
+.badge{display:inline-block;font-size:11px;padding:0 6px;border-radius:9px;border:1px solid var(--line);color:var(--muted);margin-right:4px}
+.badge.type{color:var(--blue);border-color:var(--blue)}
+.badge.claimed{color:var(--warn);border-color:var(--warn)}
+.sub{font-size:12px;color:var(--muted)}
+.pill{display:inline-block;font-size:11px;padding:0 6px;border-radius:9px;margin:2px 4px 2px 0;background:#2a2f3a;color:var(--muted)}
+.pill.block{background:var(--accent);color:#1a0b0a;font-weight:700}
+.chips{display:flex;align-items:center;gap:4px;margin-top:4px}
+.chips .r{font-size:11px;color:var(--muted);width:20px}
+.chip{font-size:11px;padding:0 6px;border-radius:4px;color:#0b0d11;font-weight:600}
+.chip.PASS{background:var(--pass)}
+.chip.CHANGES{background:var(--warn)}
+.chip.pending{background:var(--grey);color:#d0d4dc}
+.chip.pending.pulse{animation:pulse 1.2s infinite}
+.chip.bad{background:var(--bad);color:#fff}
+@keyframes pulse{50%{opacity:.4}}
+#scrim{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none}
+#drawer{position:fixed;top:0;right:0;bottom:0;width:min(640px,100%);background:var(--panel);border-left:1px solid var(--line);
+transform:translateX(100%);transition:transform .15s;display:flex;flex-direction:column}
+body.open #scrim{display:block}
+body.open #drawer{transform:none}
+#dhead{padding:12px 16px;border-bottom:1px solid var(--line)}
+#dhead button{float:right}
+#dbody{overflow:auto;padding:12px 16px;flex:1}
+button{background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:5px;padding:3px 10px;cursor:pointer;font:inherit}
+button:hover{border-color:var(--blue)}
+.files{margin:0 0 12px;padding:0;list-style:none}
+.files h3{font-size:11px;text-transform:uppercase;color:var(--muted);margin:10px 0 4px}
+.files a{display:flex;gap:6px;align-items:center;color:var(--text);text-decoration:none;padding:2px 0;cursor:pointer}
+.files a:hover{color:var(--blue)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--grey);display:inline-block}
+.dot.PASS,.dot.READY{background:var(--pass)}.dot.CHANGES{background:var(--warn)}.dot.NEEDS-HUMAN{background:var(--accent)}
+.vpill{display:inline-block;padding:1px 10px;border-radius:9px;font-weight:700;color:#0b0d11;background:var(--grey)}
+.vpill.PASS,.vpill.READY{background:var(--pass)}.vpill.CHANGES{background:var(--warn)}.vpill.NEEDS-HUMAN{background:var(--accent)}
+#doc pre,#doc code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px}
+#doc pre{background:#0b0d11;padding:8px;border-radius:6px;overflow:auto;white-space:pre-wrap}
+#doc code{background:#0b0d11;padding:0 4px;border-radius:3px}
+#doc pre code{padding:0}
+#doc blockquote{margin:6px 0;padding-left:10px;border-left:3px solid var(--line);color:var(--muted)}
+#doc table{border-collapse:collapse}#doc td,#doc th{border:1px solid var(--line);padding:3px 8px}
+#doc a{color:var(--blue)}
+.reasons{color:var(--accent);margin:4px 0 0;padding-left:18px}
+footer{padding:12px 16px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}
+footer code{background:var(--card);padding:1px 5px;border-radius:3px;margin-right:6px;display:inline-block;margin-bottom:4px}
+@media (max-width:600px){#board{flex-direction:column;overflow-x:visible}.col{flex:none;width:100%}#drawer{width:100%}}
+</style>
+</head>
+<body>
+<header><h1>story-factory</h1><span id="status">loading...</span></header>
+<div id="board"></div>
+<footer>
+<code>/story &lt;idea&gt;</code><code>/story epic &lt;idea|KEY&gt;</code><code>/story refine &lt;KEY&gt;</code><code>/story next</code><code>/story approve &lt;id&gt;</code><code>/story rework &lt;id&gt; &lt;note&gt;</code><code>/story resume &lt;id&gt;</code><code>/story render &lt;id&gt;</code>
+</footer>
+<div id="scrim"></div>
+<aside id="drawer" aria-hidden="true">
+  <div id="dhead"></div>
+  <div id="dbody"></div>
+</aside>
+<script>
+'use strict';
+var STAGES = ['intake', 'draft', 'review', 'approve', 'children', 'ready', 'needs-human'];
+var LENSES = ['invest', 'ac', 'tech', 'security'];
+var CHIP = {invest: 'inv', ac: 'ac', tech: 'tech', security: 'sec'};
+var BLOCKING = ['pii', 'auth', 'payments', 'regulatory'];
+var POLL_MS = 2000;
+var state = {jobs: [], open: null, roundCache: {}, openFile: null};
+
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+    return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c];
+  });
+}
+function $(id) { return document.getElementById(id); }
+function setStatus(msg, bad) { var s = $('status'); s.textContent = msg; s.className = bad ? 'err' : ''; }
+
+function getText(url) {
+  return fetch(url, {cache: 'no-store'}).then(function (r) {
+    if (!r.ok) throw new Error(url + ': HTTP ' + r.status);
+    return r.text();
+  });
+}
+function parseDir(html) {
+  var doc = new DOMParser().parseFromString(html, 'text/html');
+  var out = [];
+  Array.prototype.forEach.call(doc.querySelectorAll('a[href]'), function (a) {
+    var h = a.getAttribute('href');
+    if (!h || h.charAt(0) === '/' || h.charAt(0) === '?' || h.charAt(0) === '#' || h.indexOf('..') === 0) return;
+    var name = decodeURIComponent(h);
+    if (name.charAt(0) === '.') return;
+    out.push(name);
+  });
+  return out;
+}
+function listDir(url) { return getText(url).then(parseDir); }
+function listRecursive(url, prefix) {
+  return listDir(url).then(function (names) {
+    return Promise.all(names.map(function (n) {
+      if (n.slice(-1) === '/') return listRecursive(url + encodeURIComponent(n.slice(0, -1)) + '/', prefix + n);
+      return Promise.resolve([prefix + n]);
+    })).then(function (parts) { return [].concat.apply([], parts); });
+  });
+}
+function firstLine(text) { return (text.split('\n')[0] || '').trim(); }
+function verdictOf(line) {
+  var m = /^(?:VERDICT:\s*)?(PASS|CHANGES|READY|NEEDS-HUMAN)\b/.exec(line);
+  return m ? m[1] : null;
+}
+
+/* ---------- polling ---------- */
+function poll() {
+  listDir('jobs/').then(function (names) {
+    var ids = names.filter(function (n) { return n.slice(-1) === '/'; }).map(function (n) { return n.slice(0, -1); });
+    return Promise.all(ids.map(function (id) {
+      return getText('jobs/' + encodeURIComponent(id) + '/job.json').then(function (t) {
+        var j = JSON.parse(t);
+        j.id = j.id || id;
+        j._dir = id;
+        return j;
+      }).catch(function () { return null; });
+    }));
+  }).then(function (jobs) {
+    state.jobs = jobs.filter(Boolean).sort(function (a, b) { return a._dir < b._dir ? -1 : 1; });
+    return loadRounds(state.jobs);
+  }).then(function () {
+    render();
+    setStatus(state.jobs.length + ' jobs, updated ' + new Date().toLocaleTimeString());
+  }).catch(function (e) {
+    setStatus('cannot read jobs/: ' + e.message, true);
+  }).then(function () { setTimeout(poll, POLL_MS); });
+}
+
+/* earlier rounds: first line of round-N/review-<lens>.md; cached once the round is finished */
+function loadRounds(jobs) {
+  var tasks = [];
+  jobs.forEach(function (j) {
+    for (var r = 1; r < (j.round || 0) + (j.stage === 'review' ? 0 : 0); r++) {
+      LENSES.forEach(function (lens) {
+        var key = j._dir + '|' + r + '|' + lens;
+        if (state.roundCache[key]) return;
+        tasks.push(getText('jobs/' + encodeURIComponent(j._dir) + '/round-' + r + '/review-' + lens + '.md').then(function (t) {
+          state.roundCache[key] = verdictOf(firstLine(t)) || 'INVALID';
+        }, function () { state.roundCache[key] = 'INVALID'; }));
+      });
+    }
+  });
+  return Promise.all(tasks);
+}
+
+/* ---------- board ---------- */
+function chipHtml(v, lens, pulse) {
+  var cls = v === 'PASS' || v === 'CHANGES' ? v : v === 'pending' ? 'pending' + (pulse ? ' pulse' : '') : 'bad';
+  var label = CHIP[lens] + (cls === 'bad' ? '?' : '');
+  return '<span class="chip ' + cls + '" title="' + esc(lens + ': ' + (v || 'missing')) + '">' + esc(label) + '</span>';
+}
+function chipRows(j) {
+  var rows = '';
+  var cur = j.round || 0;
+  for (var r = 1; r < cur; r++) {
+    rows += '<div class="chips"><span class="r">R' + r + '</span>' + LENSES.map(function (l) {
+      return chipHtml(state.roundCache[j._dir + '|' + r + '|' + l] || 'pending', l, false);
+    }).join('') + '</div>';
+  }
+  if (cur >= 1 || (j.reviews && Object.keys(j.reviews).length)) {
+    var rv = j.reviews || {};
+    rows += '<div class="chips"><span class="r">R' + Math.max(cur, 1) + '</span>' + LENSES.map(function (l) {
+      var v = rv[l];
+      if (v !== 'PASS' && v !== 'CHANGES' && v !== 'pending') v = 'INVALID';
+      return chipHtml(v, l, j.stage === 'review');
+    }).join('') + '</div>';
+  }
+  return rows;
+}
+function cardHtml(j) {
+  var m = /^(\d+)-?(.*)$/.exec(j.id);
+  var num = m ? m[1] : '', slug = m ? m[2] : j.id;
+  var text = j.title || String(j.idea || '').slice(0, 90);
+  var h = '<div class="card ' + esc(j.stage) + '" data-id="' + esc(j._dir) + '">';
+  h += '<div class="cid">#' + esc(num) + ' ' + esc(slug) + '</div>';
+  h += '<div><span class="badge type">' + esc(j.type) + '</span>';
+  if (j.mode === 'refine') h += '<span class="badge">refine</span>';
+  if (j.harness === 'copilot-lite') h += '<span class="badge">lite</span>';
+  if (j.claimed_by) h += '<span class="badge claimed" title="' + esc('claimed by ' + j.claimed_by) + '">claimed</span>';
+  h += '</div><div class="title">' + esc(text) + '</div>';
+  if (j.parent) h += '<div class="sub">&uarr; ' + esc(j.parent) + '</div>';
+  if (j.type === 'epic' && j.children && Object.keys(j.children).length) {
+    var ids = Object.keys(j.children), ready = 0, running = 0;
+    ids.forEach(function (c) {
+      var st = j.children[c];
+      var cj = state.jobs.filter(function (x) { return x._dir === c; })[0];
+      if (cj) st = cj.stage;
+      if (st === 'ready') ready++;
+      else if (st !== 'needs-human' && cj && cj.claimed_by) running++;
+    });
+    h += '<div class="sub">children ' + ready + '/' + ids.length + ' ready' + (running ? ', ' + running + ' running' : '') + '</div>';
+  }
+  (j.flags || []).forEach(function (f) {
+    h += '<span class="pill' + (BLOCKING.indexOf(f) >= 0 ? ' block' : '') + '">' + esc(f) + '</span>';
+  });
+  return h + chipRows(j) + '</div>';
+}
+function render() {
+  var by = {};
+  STAGES.forEach(function (s) { by[s] = []; });
+  state.jobs.forEach(function (j) { if (by[j.stage]) by[j.stage].push(j); });
+  var h = '';
+  STAGES.forEach(function (s) {
+    if (s === 'children' && !by[s].length) return;
+    h += '<section class="col ' + s + '"><h2><span>' + esc(s) + '</span><span>' + by[s].length + '</span></h2>' +
+      by[s].map(cardHtml).join('') + '</section>';
+  });
+  $('board').innerHTML = h;
+  if (state.open) renderHead();
+}
+$('board').addEventListener('click', function (e) {
+  var c = e.target.closest('.card');
+  if (c) openDrawer(c.getAttribute('data-id'));
+});
+
+/* ---------- markdown ---------- */
+function inline(s) {
+  var codes = [];
+  s = esc(s).replace(/`([^`]+)`/g, function (_, c) { codes.push(c); return '\u0000' + (codes.length - 1) + '\u0000'; });
+  s = s.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, function (_, t, u) {
+    var raw = u.replace(/&amp;/g, '&');
+    if (!/^(https?:\/\/|#|[^:]*$)/i.test(raw)) return t;
+    return '<a href="' + u + '" rel="noopener">' + t + '</a>';
+  });
+  s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/(^|[^*\w])\*([^*]+)\*/g, '$1<em>$2</em>');
+  return s.replace(/\u0000(\d+)\u0000/g, function (_, i) { return '<code>' + codes[+i] + '</code>'; });
+}
+function mdToHtml(src) {
+  var lines = src.replace(/\r/g, '').split('\n'), out = [], i = 0;
+  var first = verdictOf(lines[0] || '');
+  if (first) { out.push('<p><span class="vpill ' + first + '">' + esc(first) + '</span></p>'); i = 1; }
+  function isBlank(l) { return !/\S/.test(l); }
+  while (i < lines.length) {
+    var l = lines[i], m;
+    if (isBlank(l)) { i++; continue; }
+    if (/^```/.test(l)) {
+      var buf = []; i++;
+      while (i < lines.length && !/^```/.test(lines[i])) buf.push(lines[i++]);
+      i++;
+      out.push('<pre><code>' + esc(buf.join('\n')) + '</code></pre>');
+    } else if ((m = /^(#{1,6})\s+(.*)$/.exec(l))) {
+      out.push('<h' + m[1].length + '>' + inline(m[2]) + '</h' + m[1].length + '>'); i++;
+    } else if (/^>/.test(l)) {
+      var q = [];
+      while (i < lines.length && /^>/.test(lines[i])) q.push(lines[i++].replace(/^>\s?/, ''));
+      out.push('<blockquote>' + inline(q.join(' ')) + '</blockquote>');
+    } else if (/^\s*\|/.test(l) && i + 1 < lines.length && /^\s*\|?\s*:?-+/.test(lines[i + 1])) {
+      var cells = function (r) { return r.replace(/^\s*\|/, '').replace(/\|\s*$/, '').split('|'); };
+      var t = '<table><thead><tr>' + cells(l).map(function (c) { return '<th>' + inline(c.trim()) + '</th>'; }).join('') + '</tr></thead><tbody>';
+      i += 2;
+      while (i < lines.length && /^\s*\|/.test(lines[i])) {
+        t += '<tr>' + cells(lines[i++]).map(function (c) { return '<td>' + inline(c.trim()) + '</td>'; }).join('') + '</tr>';
+      }
+      out.push(t + '</tbody></table>');
+    } else if (/^\s*([-*]|\d+\.)\s+/.test(l)) {
+      var stack = [], html = '';
+      while (i < lines.length && /^\s*([-*]|\d+\.)\s+/.test(lines[i])) {
+        var mm = /^(\s*)([-*]|\d+\.)\s+(.*)$/.exec(lines[i++]);
+        var depth = Math.floor(mm[1].replace(/\t/g, '  ').length / 2);
+        var tag = /\d/.test(mm[2]) ? 'ol' : 'ul';
+        while (stack.length > depth + 1) html += '</li></' + stack.pop() + '>';
+        if (stack.length === depth + 1) html += '</li>';
+        else while (stack.length < depth + 1) { html += '<' + tag + '>'; stack.push(tag); }
+        var body = mm[3], task = /^\[( |x|X)\]\s+(.*)$/.exec(body);
+        if (task) body = '<input type="checkbox" disabled' + (task[1] === ' ' ? '' : ' checked') + '> ' + inline(task[2]);
+        else body = inline(body);
+        html += '<li>' + body;
+      }
+      while (stack.length) html += '</li></' + stack.pop() + '>';
+      out.push(html);
+    } else {
+      var p = [];
+      while (i < lines.length && !isBlank(lines[i]) && !/^(```|#{1,6}\s|>|\s*([-*]|\d+\.)\s)/.test(lines[i])) p.push(lines[i++]);
+      if (!p.length) { p.push(lines[i++]); }
+      out.push('<p>' + inline(p.join(' ')) + '</p>');
+    }
+  }
+  return out.join('\n');
+}
+
+/* ---------- drawer ---------- */
+function jobById(id) { return state.jobs.filter(function (j) { return j._dir === id; })[0]; }
+function renderHead() {
+  var j = jobById(state.open);
+  if (!j) return;
+  var h = '<button id="dclose" type="button">Close</button><div class="cid">' + esc(j.id) + '</div>';
+  h += '<div class="title">' + esc(j.title || j.idea || '') + '</div>';
+  h += '<div class="sub">stage ' + esc(j.stage) + ' &middot; round ' + esc(j.round) +
+    (j.approved_by ? ' &middot; approved by ' + esc(j.approved_by) : '') + '</div>';
+  if (j.gate_reasons && j.gate_reasons.length) {
+    h += '<ul class="reasons">' + j.gate_reasons.map(function (r) { return '<li>' + esc(r) + '</li>'; }).join('') + '</ul>';
+  }
+  $('dhead').innerHTML = h;
+  $('dclose').onclick = closeDrawer;
+}
+function groupFiles(files) {
+  var g = {Story: [], Context: []}, order = ['Story'], rounds = {};
+  files.forEach(function (f) {
+    var m = /^round-(\d+)\//.exec(f);
+    if (m) { (rounds[m[1]] = rounds[m[1]] || []).push(f); }
+    else if (/^context\//.test(f)) g.Context.push(f);
+    else if (f !== 'job.json') g.Story.push(f);
+  });
+  var res = [['Story', g.Story]];
+  Object.keys(rounds).sort(function (a, b) { return a - b; }).forEach(function (n) { res.push(['Round ' + n, rounds[n]]); });
+  res.push(['Context', g.Context]);
+  return res.filter(function (x) { return x[1].length; });
+}
+function openDrawer(id) {
+  state.open = id;
+  document.body.classList.add('open');
+  $('drawer').setAttribute('aria-hidden', 'false');
+  renderHead();
+  $('dbody').innerHTML = '<div class="sub">loading files...</div>';
+  var base = 'jobs/' + encodeURIComponent(id) + '/';
+  listRecursive(base, '').then(function (files) {
+    var groups = groupFiles(files);
+    var h = '<div class="files">' + groups.map(function (g) {
+      return '<h3>' + esc(g[0]) + '</h3>' + g[1].map(function (f) {
+        return '<a data-file="' + esc(f) + '"><span class="dot" data-dot="' + esc(f) + '"></span>' + esc(f) + '</a>';
+      }).join('');
+    }).join('') + '</div><div id="doc"></div>';
+    $('dbody').innerHTML = h;
+    files.forEach(function (f) {
+      if (!/\.md$/.test(f) && !/^context\//.test(f)) return;
+      getText(base + f.split('/').map(encodeURIComponent).join('/')).then(function (t) {
+        var v = verdictOf(firstLine(t)), d = document.querySelector('[data-dot="' + f.replace(/"/g, '\\"') + '"]');
+        if (d && v) d.className = 'dot ' + v;
+      }).catch(function () {});
+    });
+    var pick = files.indexOf('story.md') >= 0 ? 'story.md' : files[0];
+    if (pick) showFile(id, pick);
+  }).catch(function (e) { $('dbody').innerHTML = '<div class="sub">' + esc(e.message) + '</div>'; });
+}
+$('dbody').addEventListener('click', function (e) {
+  var a = e.target.closest('a[data-file]');
+  if (a && state.open) showFile(state.open, a.getAttribute('data-file'));
+});
+function showFile(id, f) {
+  var url = 'jobs/' + encodeURIComponent(id) + '/' + f.split('/').map(encodeURIComponent).join('/');
+  getText(url).then(function (t) {
+    var h = '<h3>' + esc(f) + '</h3>';
+    if (/\.json$/.test(f)) {
+      var pretty;
+      try { pretty = JSON.stringify(JSON.parse(t), null, 2); } catch (e) { pretty = t; }
+      h += '<pre>' + esc(pretty) + '</pre>';
+    } else if (/\.md$/.test(f)) {
+      if (f === 'story.md') h += '<button id="copymd" type="button">Copy markdown</button>';
+      h += mdToHtml(t);
+    } else {
+      h += '<pre>' + esc(t) + '</pre>';
+    }
+    $('doc').innerHTML = h;
+    var b = $('copymd');
+    if (b) b.onclick = function () { copyText(t, b); };
+  }).catch(function (e) { $('doc').innerHTML = '<div class="sub">' + esc(e.message) + '</div>'; });
+}
+function copyText(text, btn) {
+  function done() { btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = 'Copy markdown'; }, 1500); }
+  function fallback() {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); done(); } catch (e) {}
+    document.body.removeChild(ta);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback);
+  else fallback();
+}
+function closeDrawer() {
+  state.open = null;
+  document.body.classList.remove('open');
+  $('drawer').setAttribute('aria-hidden', 'true');
+}
+$('scrim').addEventListener('click', closeDrawer);
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeDrawer(); });
+
+poll();
+</script>
+</body>
+</html>

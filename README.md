@@ -56,3 +56,12 @@ python3 scripts/sf.py jira-keys ID    # keys still to pull; loop: jira-keys, pul
 
 `jira-keys` seeds from `job.jira_key` and keys in the idea and `rework-*.md`, follows
 parent and links up to `jira.follow_links` hops, and never exceeds `jira.max_tickets`.
+
+## Dashboard
+
+```bash
+python3 scripts/sf.py dashboard [--port 8765]   # http://127.0.0.1:8765/dashboard.html, loopback only
+```
+
+Read-only board of `factory/jobs/` that polls every 2 s. It needs no network. `--jobs-dir DIR` serves a
+folder holding `dashboard.html` and `jobs/`; `python3 tests/make_demo_jobs.py DIR` builds one with fake jobs.
