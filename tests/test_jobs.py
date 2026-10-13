@@ -129,6 +129,13 @@ class SettingsTests(unittest.TestCase):
         self.assertIn("Edit(//Users/me/work/accounts-api/**)", out["deny"])
         self.assertIn("Read(//Users/me/secret/**)", out["deny"])
 
+    def test_settings_allow_rules_and_jira_skill(self):
+        out = settings.build({"jira": {"skill": "pull-jira-ticket"}})["permissions"]
+        self.assertIn("Bash(python3 scripts/sf.py *)", out["allow"])
+        self.assertIn("Skill(pull-jira-ticket)", out["allow"])
+        self.assertEqual(settings.build({})["permissions"]["allow"][:2],
+                         ["Bash(python3 scripts/sf.py *)", "Bash(python3 scripts/jira_stub.py *)"])
+
     def test_config_resolves_relative_paths(self):
         old = os.environ.get("STORY_FACTORY_CONFIG")
         tmp = tempfile.mkdtemp()

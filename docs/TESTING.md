@@ -14,7 +14,7 @@ Run this on the work laptop with real Jira and real team repos. Nothing here wri
    - `deny_read`: absolute paths of repos the factory must not read.
    - `jira.skill`: `pull-jira-ticket`. `jira.project_key`: your project key.
 4. `python3 scripts/sf.py settings`, then `python3 scripts/sf.py doctor`.
-   - Expect: `settings` writes `.claude/settings.local.json` (read access to every repo and team-docs path, edit deny rules on them). `doctor` prints `OK`. A `WARN: Claude Code has not trusted ...` line means the allow rules in `.claude/settings.json` are ignored: run `claude` once in the factory folder and accept the trust dialog, or headless runs stall at the first `sf.py` call.
+   - Expect: `settings` writes `.claude/settings.local.json` (read access to every repo and team-docs path, edit deny rules on them, and allow rules for `sf.py`, the Jira stub and the configured Jira skill). `doctor` prints `OK`. A `WARN: Claude Code has not trusted ...` line means the allow rules in `.claude/settings.json` are ignored: run `claude` once in the factory folder and accept the trust dialog, or headless runs stall at the first `sf.py` call.
 5. `git config core.hooksPath scripts/hooks`.
 6. `python3 -m unittest discover -s tests`.
    - Expect: all tests pass.
@@ -26,7 +26,7 @@ Run this on the work laptop with real Jira and real team repos. Nothing here wri
 1. Make the skill available to Claude Code as a user-level skill, for example `~/.claude/skills/pull-jira-ticket/`. Never copy it into the factory repo. `pull-jira-ticket-stub` (in `.claude/skills/`) is for the unit tests only.
 2. Start `claude` in the factory repo and run `/pull-jira-ticket <a real key>`.
    - Expect: the ticket comes back. Factory JSON, raw Jira REST JSON (`{"key":..., "fields":{...}}`) and markdown are all accepted. A failure must start with `ERROR:`.
-3. If the skill asks for approval prompts, approve them, or add an allow rule for the skill's tools to `.claude/settings.local.json` (gitignored). Add it after running `sf.py settings`, because `settings` rewrites that file.
+3. If the skill asks for approval prompts, approve them, or add an allow rule for the skill's tools to `.claude/settings.local.json` (gitignored). `sf.py settings` already allows `Skill(<jira.skill>)`; add any further rules after running it, because `settings` rewrites that file.
    - Expect: later `/story` runs pull tickets without stopping.
 
 ## 3. Test 1: a first single story
