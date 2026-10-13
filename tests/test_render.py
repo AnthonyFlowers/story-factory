@@ -46,7 +46,9 @@ class RenderTests(unittest.TestCase):
     def test_open_questions_rendered(self):
         s = load("story.json")
         s["open_questions"] = ["Is the range inclusive?"]
-        self.assertTrue(markdown.render(s, self.tpl).rstrip().endswith("## Open questions\n\n- Is the range inclusive?"))
+        text = markdown.render(s, self.tpl)
+        self.assertIn("## Open questions for the team\n\n- Is the range inclusive?", text)
+        self.assertLess(text.index("## Out of scope"), text.index("## Open questions for the team"))
 
     def test_custom_section(self):
         tpl = dict(self.tpl, custom_sections=[

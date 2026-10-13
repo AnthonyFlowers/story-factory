@@ -49,3 +49,7 @@ Statements are served by `StatementController.find` at `GET /accounts/{accountId
 ## Changes from the original ticket
 
 - acceptance_criteria: Replaced 'works for any dates' with three Given/When/Then criteria (The original criterion was not testable)
+
+## Assumptions
+
+- Either parameter may be sent alone (technical)

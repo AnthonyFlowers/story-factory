@@ -36,8 +36,10 @@ def evaluate(job_id: str) -> dict:
         story = json.loads(story_text)
     except (OSError, ValueError):
         reasons.append("schema-errors")
+    # The writer's risk_flags are hints: recorded, never blocking (decision 0057).
     for f in story.get("risk_flags") or []:
         flags.append(f)
+    sec_flags = []  # flags raised or confirmed by the security reviewer: the only blocking ones
 
     if story:
         tpl = template.load_template(cfg.get("template", "default"))
@@ -46,10 +48,7 @@ def evaluate(job_id: str) -> dict:
             reasons.append("schema-errors")
         if any(s == "MISSING" for s, _ in res["sources"] + res["api"]):
             reasons.append("missing-sources")
-        if story.get("open_questions"):
-            reasons.append("open-questions")
-        if any(a.get("kind") == "product" for a in story.get("assumptions") or []):
-            reasons.append("product-assumption")
+        # open questions and assumptions are carried through to the story, not blocking
         low = story_text.lower()
         for term in esc.get("extra_terms", []):
             if term and term.lower() in low:
@@ -64,6 +63,8 @@ def evaluate(job_id: str) -> dict:
             reasons.append("review-invalid:%s" % lens)
             continue
         flags += fl
+        if lens == "security":
+            sec_flags = fl
         if verdict == "CHANGES":
             reasons.append("changes-left:%s" % lens)
 
@@ -77,8 +78,8 @@ def evaluate(job_id: str) -> dict:
         reasons.append("decision-needs-human")
 
     flags = [f for f in verdicts.FLAGS if f in flags]
-    for f in flags:
-        if f in blocking:
+    for f in verdicts.FLAGS:
+        if f in sec_flags and f in blocking:
             reasons.append("flag:%s" % f)
     seen = []
     for r in reasons:

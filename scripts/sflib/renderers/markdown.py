@@ -135,5 +135,8 @@ def render(story: dict, template: dict) -> str:
         body = STYLES[style](value, story)
         blocks.append(("## %s\n\n%s" % (sec["heading"], body)) if sec.get("heading") else body)
     if story.get("open_questions"):
-        blocks.append("## Open questions\n\n" + _bullets(story["open_questions"]))
+        blocks.append("## Open questions for the team\n\n" + _bullets(story["open_questions"]))
+    if story.get("assumptions"):
+        blocks.append("## Assumptions\n\n" + _bullets(
+            ["%s (%s)" % (a["text"], a["kind"]) for a in story["assumptions"]]))
     return "\n\n".join(blocks) + "\n"

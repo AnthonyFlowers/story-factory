@@ -223,7 +223,10 @@ def write_brief(job_dir_path: str) -> str:
     esc = cfg["escalation"]
     L += ["", "## Escalation", ""]
     L += ["- %s" % f for f in esc["always_human"]]
-    L += ["", "These flags force NEEDS-HUMAN. Other flags are recorded but do not block READY."]
+    L += ["", "These flags force NEEDS-HUMAN only when the security reviewer raises or confirms them on its "
+               "`FLAGS:` line. The writer's `risk_flags` are hints and never block. Other flags are recorded "
+               "but do not block READY. Open questions and assumptions do not block; they are rendered "
+               "for the team."]
     if esc.get("extra_terms"):
         L += ["", "Extra terms that force NEEDS-HUMAN:"]
         L += ["- %s" % t for t in esc["extra_terms"]]

@@ -19,7 +19,7 @@
     { "id": "DOR2", "text": "At least two Given/When/Then ACs (one for a spike)", "check": "auto:ac_count" },
     { "id": "DOR3", "text": "Every API change names a contract operation", "check": "auto:api_refs" },
     { "id": "DOR4", "text": "Every source reference exists", "check": "auto:sources_exist" },
-    { "id": "DOR5", "text": "No open questions", "check": "auto:no_open_questions" },
+    { "id": "DOR5", "text": "Open questions, if any, are written as answerable questions", "check": "review" },
     { "id": "DOR6", "text": "Dependencies are listed or explicitly none", "check": "review" },
     { "id": "DOR7", "text": "Small enough for one sprint, judged without an estimate", "check": "review" }
   ]

@@ -70,12 +70,37 @@ class GateTests(unittest.TestCase):
             self.assertEqual(j["stage"], "ready")
             self.assertIn(flag, j["flags"])
 
-    def test_payments_is_human(self):
-        self.story(risk_flags=["payments"])
-        r = self.gate()
-        self.assertEqual(r.stdout.strip(), "HUMAN: flag:payments")
-        self.gate("--apply")
-        self.assertEqual(self.job_json()["stage"], "needs-human")
+    def sec(self, name):
+        shutil.copy(os.path.join(REV, name), os.path.join(self.job, "round-1", "review-security.md"))
+
+    def test_security_flag_is_human(self):
+        self.sec("pass-pii.md")
+        r = self.gate("--apply")
+        self.assertEqual(r.stdout.splitlines()[0], "HUMAN: flag:pii")
+        j = self.job_json()
+        self.assertEqual((j["stage"], j["gate_reasons"], j["flags"]), ("needs-human", ["flag:pii"], ["pii"]))
+
+    def test_writer_flag_cleared_by_security_is_ready(self):
+        self.story(risk_flags=["pii", "auth", "payments", "regulatory"])
+        r = self.gate("--apply")  # security review says FLAGS: none
+        self.assertEqual(r.stdout.split(), ["OK", "ready"])
+        j = self.job_json()
+        self.assertEqual((j["stage"], j["gate_reasons"]), ("ready", []))
+        self.assertIn("pii", j["flags"])  # recorded as a hint
+
+    def test_other_reviewer_and_decision_flags_do_not_block(self):
+        shutil.copy(os.path.join(REV, "pass-pii.md"), os.path.join(self.job, "round-1", "review-tech.md"))
+        with open(os.path.join(self.job, "decision.md"), "w") as f:
+            f.write("READY\nFLAGS: pii\n\n## Why\nok\n")
+        self.assertEqual(self.gate().stdout.strip(), "OK")
+
+    def test_missing_flags_line_is_human(self):
+        self.sec("missing-flags.md")
+        self.assertEqual(self.gate().stdout.strip(), "HUMAN: review-invalid:security")
+
+    def test_changes_remaining_is_human(self):
+        shutil.copy(os.path.join(REV, "changes-flags.md"), os.path.join(self.job, "round-1", "review-ac.md"))
+        self.assertEqual(self.gate().stdout.strip(), "HUMAN: changes-left:ac")
 
     def test_review_flags_and_changes(self):
         shutil.copy(os.path.join(REV, "changes-flags.md"), os.path.join(self.job, "round-1", "review-security.md"))
@@ -90,12 +115,17 @@ class GateTests(unittest.TestCase):
     def test_decision_flags_count(self):
         shutil.copy(os.path.join(DEC, "needs-human.md"), os.path.join(self.job, "decision.md"))
         r = self.gate()
-        self.assertEqual(r.stdout.strip(), "HUMAN: flag:pii; decision-needs-human")
+        self.assertEqual(r.stdout.strip(), "HUMAN: decision-needs-human")
 
-    def test_story_reasons(self):
+    def test_open_questions_and_assumptions_do_not_block(self):
         self.story(open_questions=["Which dates?"], assumptions=[{"text": "Dates are UTC", "kind": "product"}])
-        r = self.gate()
-        self.assertEqual(r.stdout.strip(), "HUMAN: open-questions; product-assumption")
+        r = self.gate("--apply")
+        self.assertEqual(r.stdout.split(), ["OK", "ready"])
+        with open(os.path.join(self.job, "story.md")) as f:
+            md = f.read()
+        self.assertIn("## Open questions for the team\n\n- Which dates?", md)
+        self.assertIn("## Assumptions", md)
+        self.assertIn("- Dates are UTC (product)", md)
 
     def test_technical_assumption_ok(self):
         r = self.gate()  # the sample has a technical assumption
@@ -135,7 +165,9 @@ class GateTests(unittest.TestCase):
         with open(self.cfg, "w") as f:
             json.dump(cfg, f)
         self.story(context="ok", risk_flags=["audit", "regulatory"])
-        self.assertEqual(self.gate().stdout.strip(), "HUMAN: flag:regulatory")
+        self.assertEqual(self.gate().stdout.strip(), "OK")  # writer flags are hints
+        shutil.copy(os.path.join(REV, "pass-pii.md"), os.path.join(self.job, "round-1", "review-security.md"))
+        self.assertEqual(self.gate().stdout.strip(), "HUMAN: flag:pii")
 
     def test_no_decision(self):
         os.unlink(os.path.join(self.job, "decision.md"))

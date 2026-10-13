@@ -75,11 +75,11 @@ class ChecksNoReposTests(ChecksTestCase):
         self.save_story(s)
         r = self.sf("checks", "900-sample", "--round", "2")
         self.assertEqual(r.returncode, 0)
-        self.assertEqual(r.stdout.strip(), "checks: schema=ERRORS dor_fail=2 missing=0")
+        self.assertEqual(r.stdout.strip(), "checks: schema=ERRORS dor_fail=1 missing=0")
         md = self.checks_md(2)
         self.assertIn("Schema: ERRORS", md)
         self.assertIn("- ERROR /title: required", md)
-        self.assertIn("- FAIL DOR5 No open questions: 2 open questions", md)
+        self.assertNotIn("FAIL DOR5", md)
         self.assertIn("- FAIL DOR2 ", md)
 
     def test_jira_missing(self):

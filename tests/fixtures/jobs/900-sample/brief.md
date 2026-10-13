@@ -36,7 +36,7 @@ Definition of ready:
 - DOR2: At least two Given/When/Then ACs (one for a spike)
 - DOR3: Every API change names a contract operation
 - DOR4: Every source reference exists
-- DOR5: No open questions
+- DOR5: Open questions, if any, are written as answerable questions
 - DOR6: Dependencies are listed or explicitly none
 - DOR7: Small enough for one sprint, judged without an estimate
 
