@@ -1,0 +1,28 @@
+{
+  "id": "900-sample",
+  "type": "story",
+  "mode": "refine",
+  "harness": "claude",
+  "idea": "Filter statements by date range",
+  "jira_key": "DEMO-101",
+  "parent": null,
+  "children": {},
+  "title": null,
+  "stage": "review",
+  "round": 1,
+  "revisions_used": 0,
+  "reviews": {
+    "invest": "pending",
+    "ac": "pending",
+    "tech": "pending",
+    "security": "pending"
+  },
+  "flags": [],
+  "decision": null,
+  "approved_by": null,
+  "gate_reasons": [],
+  "writer_agent": null,
+  "claimed_by": null,
+  "created": "2026-10-13T00:00:00Z",
+  "updated": "2026-10-13T00:00:00Z"
+}
