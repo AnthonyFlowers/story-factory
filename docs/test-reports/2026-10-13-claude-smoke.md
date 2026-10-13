@@ -67,3 +67,26 @@ Quality: ACs are concrete (named ids, exact status codes and bodies), testable, 
 4. Expect NEEDS-HUMAN on nearly everything in a bank domain; decide bug 4 first, or the owner will review every story.
 5. Expect 3 to 8 minutes per story (about $1.5 to $3 each, with Opus writer) and about 8 minutes for a two-child epic run in parallel.
 6. If a headless or interactive run stops at `review`, use `sf.py claim ID --force` then `/story resume ID`.
+
+## Fixes (same day)
+
+Each fix is a separate commit on main with a unit test and a decision record. Retests used the smoke clone pulled to the fixes (`/Users/ant/Documents/ai/story-factory-smoke`) and the same dummy team repo; the manifest stayed unchanged and `check-job` passed.
+
+| Bug | Fix commit | Retest |
+|---|---|---|
+| 1 stalls when untrusted | `7dfbf1b` doctor warns (0050); `509f1a2` `sf.py settings` writes the allow rules and `Skill(<jira.skill>)` into `settings.local.json`, which Claude honours even when untrusted (0055) | Job 011, plain `/story` with no `--allowedTools`, folder still untrusted: ran to the approver in 290 s, no stall, no permission denials. |
+| 2 compound commands | `e43aced` SKILL.md rule of one plain command per Bash call; new `sf.py human ID` (0053) | Jobs 008 to 011: no denials; the orchestrator used `sf.py human`. |
+| 3 stale claim | `59f3be0` `claim` takes over a claim whose same-host pid is dead, under a directory flock (0051) | Unit tests (dead pid taken over; live, custom and other-host holders stay BUSY). Not re-run end to end. |
+| 5 Jira Skill call errors | `509f1a2` (0055). Root cause: the `Skill` call needed a permission rule that the ignored shared settings did not provide, and the orchestrator then escalated. | Jobs 010 and 011 pulled the stub ticket through the Skill tool. Note: before the fix, strict ERROR handling made refine and bug runs escalate at intake (jobs 008, 009). |
+| 6 empty gate_reasons on escalate | `8c3b8a7` `escalate` records `escalated: <why>` (0052) | Job 008 showed `gate_reasons: ["escalated: Jira pull failed ..."]`. |
+| 7 invest review not saved | `175793e` reviewers told to Write, never reply with the review (0054) | Not reproducible on demand; no recurrence in jobs 010 and 011 (one run each). |
+
+Left unfixed:
+
+- **Bug 4 (0 of 7 jobs READY):** needs an owner decision on what should force NEEDS-HUMAN. Not touched. The READY path is still untested end to end.
+- **Bug 8 (writer not resumable across sessions) and bug 9 (`duration_ms`):** Claude Code behaviour, nothing to fix here.
+- `doctor` still warns about trust after fix 1; that is intentional (0050), and the run above shows the factory works without it.
+
+## Testbed
+
+The dummy team repo is versioned as `testbed/team-repo/` (plain files). `python3 scripts/sf.py testbed PATH` recreates it as a standalone git repo and prints the config snippet (decision 0056, section "Testbed" in `docs/TESTING.md`). The original instance stays at `/Users/ant/Documents/ai/story-factory-smoke-team`; the smoke clone stays at `/Users/ant/Documents/ai/story-factory-smoke`.
