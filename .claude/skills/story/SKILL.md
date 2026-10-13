@@ -108,7 +108,7 @@ One line per transition, for example `004-refine-demo-101: round 1 tech CHANGES,
 
 ## 11. /story approve <id>
 
-1. `sf.py claim <id>`. On `BUSY <id> <who> <time>` (exit 3): tell the user who holds the job, suggest `/story approve <id>` again later or, if the holder is dead and the user confirms, re-run with `sf.py claim <id> --force`. Stop.
+1. `sf.py claim <id>`. On `BUSY <id> <who> <time>` (exit 3): tell the user who holds the job, suggest `/story approve <id>` again later or, if the holder is on another host or has a custom label and is dead and the user confirms, re-run with `sf.py claim <id> --force`. Stop.
 2. `python3 scripts/sf.py job <id>` and check that `stage` is `needs-human`; otherwise `sf.py release <id>` and say why you stopped.
 3. `sf.py validate <job>/story.json` (the owner may have hand-edited it). On errors, release and stop.
 4. `sf.py job <id> --stage ready --decision READY --approved-by human`, then `sf.py render <id>`, then `sf.py release <id>`.

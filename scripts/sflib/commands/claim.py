@@ -6,7 +6,10 @@ from .. import claims
 def run_claim(args):
     ok, info = claims.claim(args.id, who=args.who, force=args.force)
     if ok:
-        print("CLAIMED %s" % args.id)
+        if info.get("took_over"):
+            print("CLAIMED %s (took over a stale claim from %s, its process is gone)" % (args.id, info["took_over"]))
+        else:
+            print("CLAIMED %s" % args.id)
         return 0
     print("BUSY %s %s %s" % (args.id, info.get("who"), info.get("time")))
     return 3

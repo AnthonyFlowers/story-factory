@@ -43,6 +43,27 @@ class ClaimTests(JobsTestCase):
         self.assertEqual(r.returncode, 0)
         self.assertEqual(self.job(jid)["claimed_by"], "b")
 
+    def test_dead_holder_is_taken_over(self):
+        import socket
+        jid = self.new("stale")
+        dead = subprocess.Popen([sys.executable, "-c", "pass"])
+        dead.wait()
+        self.sf("claim", jid, "--who", "%s:%d" % (socket.gethostname(), dead.pid), "--force")
+        r = self.sf("claim", jid, "--who", "sess-b")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertIn("took over a stale claim", r.stdout)
+        self.assertEqual(self.job(jid)["claimed_by"], "sess-b")
+
+    def test_live_or_custom_holder_stays_busy(self):
+        import socket
+        jid = self.new("live")
+        self.sf("claim", jid, "--who", "%s:%d" % (socket.gethostname(), os.getpid()), "--force")
+        self.assertEqual(self.sf("claim", jid, "--who", "x").returncode, 3)
+        self.sf("claim", jid, "--who", "custom-label", "--force")
+        self.assertEqual(self.sf("claim", jid, "--who", "x").returncode, 3)
+        self.sf("claim", jid, "--who", "otherhost:99999999", "--force")
+        self.assertEqual(self.sf("claim", jid, "--who", "x").returncode, 3)
+
     def test_concurrent_claims_one_winner(self):
         jid = self.new("race")
         self.sf("release", jid)
