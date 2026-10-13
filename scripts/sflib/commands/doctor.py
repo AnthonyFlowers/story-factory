@@ -5,6 +5,8 @@ from .. import config, doctor
 
 def run(args):
     problems = doctor.check(config.root())
+    for w in doctor.warnings(config.root()):
+        print("WARN: %s" % w)
     if not problems:
         print("OK")
         return 0

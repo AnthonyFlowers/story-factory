@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import os
 import shutil
 import subprocess
@@ -59,3 +60,27 @@ class DoctorTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class DoctorTrustWarningTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, self.tmp, True)
+        self.cj = os.path.join(self.tmp, "claude.json")
+
+    def write(self, data):
+        with open(self.cj, "w") as f:
+            json.dump(data, f)
+
+    def test_untrusted_warns(self):
+        self.write({"projects": {}})
+        w = doctor.warnings(self.tmp, self.cj)
+        self.assertEqual(len(w), 1)
+        self.assertIn("trust dialog", w[0])
+
+    def test_trusted_is_quiet(self):
+        self.write({"projects": {os.path.realpath(self.tmp): {"hasTrustDialogAccepted": True}}})
+        self.assertEqual(doctor.warnings(self.tmp, self.cj), [])
+
+    def test_missing_state_file_is_quiet(self):
+        self.assertEqual(doctor.warnings(self.tmp, self.cj), [])

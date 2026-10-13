@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import os
 import subprocess
 import sys
@@ -37,3 +38,20 @@ def check(root: str) -> list:
     if sys.version_info < (3, 9):
         problems.append("python3 is %d.%d, need 3.9 or newer" % sys.version_info[:2])
     return problems
+
+
+def warnings(root: str, claude_json=None) -> list:
+    """Non-fatal advice. Claude Code ignores .claude/settings.json allow rules until the
+    trust dialog is accepted for the folder, so a headless `claude -p` run stalls."""
+    path = claude_json or os.environ.get("SF_CLAUDE_JSON") or os.path.expanduser("~/.claude.json")
+    try:
+        with open(path) as f:
+            projects = json.load(f).get("projects", {})
+    except (OSError, ValueError, AttributeError):
+        return []  # no Claude Code state to inspect: nothing to say
+    real = os.path.realpath(root)
+    for key in (root, real):
+        if projects.get(key, {}).get("hasTrustDialogAccepted"):
+            return []
+    return ["Claude Code has not trusted %s: it ignores the allow rules in .claude/settings.json "
+            "until you run `claude` there once and accept the trust dialog" % real]

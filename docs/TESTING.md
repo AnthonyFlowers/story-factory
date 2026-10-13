@@ -14,7 +14,7 @@ Run this on the work laptop with real Jira and real team repos. Nothing here wri
    - `deny_read`: absolute paths of repos the factory must not read.
    - `jira.skill`: `pull-jira-ticket`. `jira.project_key`: your project key.
 4. `python3 scripts/sf.py settings`, then `python3 scripts/sf.py doctor`.
-   - Expect: `settings` writes `.claude/settings.local.json` (read access to every repo and team-docs path, edit deny rules on them). `doctor` prints `OK`.
+   - Expect: `settings` writes `.claude/settings.local.json` (read access to every repo and team-docs path, edit deny rules on them). `doctor` prints `OK`. A `WARN: Claude Code has not trusted ...` line means the allow rules in `.claude/settings.json` are ignored: run `claude` once in the factory folder and accept the trust dialog, or headless runs stall at the first `sf.py` call.
 5. `git config core.hooksPath scripts/hooks`.
 6. `python3 -m unittest discover -s tests`.
    - Expect: all tests pass.

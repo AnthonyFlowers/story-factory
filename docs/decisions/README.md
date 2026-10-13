@@ -51,3 +51,4 @@ One file per decision, numbered in order. Format: Date, Status, By, then Decisio
 - [0047. E2E dry run deferred to the owner's manual test](0047-e2e-dry-run-deferred-to-owner-manual-test.md) (owner)
 - [0048. check-job built without the dummy demo repo fixture](0048-check-job-without-demo-repo-fixture.md) (coordinator)
 - [0049. check-job rules and manifest scope](0049-check-job-rules-and-manifest-scope.md) (step-08 subagent)
+- [0050. doctor warns when Claude Code has not trusted the folder](0050-doctor-warns-when-claude-code-folder-untrusted.md) (coordinator)
