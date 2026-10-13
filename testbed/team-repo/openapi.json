@@ -1,0 +1,8 @@
+{"openapi":"3.0.0","info":{"title":"accounts-api","version":"1.0.0"},"paths":{
+"/accounts/{id}":{"get":{"operationId":"AccountController.findById","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"Account","content":{"application/json":{"schema":{"$ref":"#/components/schemas/Account"}}}},"404":{"description":"Not found"}}}},
+"/transfers":{"post":{"operationId":"TransferController.create","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/NewTransfer"}}}},"responses":{"200":{"description":"Created","content":{"application/json":{"schema":{"$ref":"#/components/schemas/Transfer"}}}},"422":{"description":"Invalid"}}}},
+"/transfers/{id}":{"get":{"operationId":"TransferController.findById","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"Transfer","content":{"application/json":{"schema":{"$ref":"#/components/schemas/Transfer"}}}},"404":{"description":"Not found"}}}}},
+"components":{"schemas":{
+"Account":{"type":"object","properties":{"id":{"type":"string"},"ownerId":{"type":"string"},"balance":{"type":"number"},"currency":{"type":"string"}}},
+"NewTransfer":{"type":"object","required":["fromAccountId","toAccountId","amount"],"properties":{"fromAccountId":{"type":"string"},"toAccountId":{"type":"string"},"amount":{"type":"number"}}},
+"Transfer":{"type":"object","properties":{"id":{"type":"string"},"fromAccountId":{"type":"string"},"toAccountId":{"type":"string"},"amount":{"type":"number"},"status":{"type":"string","enum":["PENDING","COMPLETED","FAILED"]},"createdAt":{"type":"string","format":"date-time"}}}}}}

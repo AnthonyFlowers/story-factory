@@ -57,3 +57,4 @@ One file per decision, numbered in order. Format: Date, Status, By, then Decisio
 - [0053. Skill runs one plain command per Bash call; sf.py human](0053-skill-one-plain-command-per-bash-call.md) (coordinator)
 - [0054. Reviewers are told to save the review, not reply with it](0054-reviewers-told-to-write-not-reply.md) (coordinator)
 - [0055. settings.local.json carries the allow rules and the Jira skill](0055-settings-local-carries-the-allow-rules.md) (coordinator)
+- [0056. Testbed dummy team repo is versioned in the factory](0056-testbed-dummy-team-repo-in-the-factory.md) (owner)

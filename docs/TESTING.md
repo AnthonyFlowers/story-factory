@@ -115,3 +115,13 @@ Run this on the work laptop with real Jira and real team repos. Nothing here wri
 ## Test results
 
 - (date, test, stage, rounds, flags, pass or fail, notes)
+
+## Testbed
+
+`testbed/team-repo/` holds a tiny dummy LoopBack-style API (`accounts-api`: accounts and transfers, `openapi.json` with `GET /accounts/{id}`, `POST /transfers`, `GET /transfers/{id}`, no work data). It is plain files with no `.git`, and no config points at it by default, so the checks never treat it as a team repo. To use it:
+
+```bash
+python3 scripts/sf.py testbed /absolute/path/to/team-repo-copy   # copies it, git init, one commit, prints the config snippet
+```
+
+Put the printed `repos` and `jira` entries into `factory.config.json`, then run `sf.py settings`, `sf.py doctor` and `sf.py check-job --manifest` as in section 1. Run it against a throwaway clone of the factory. Findings from the first run are in `docs/test-reports/2026-10-13-claude-smoke.md`.
