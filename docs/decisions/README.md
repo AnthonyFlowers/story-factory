@@ -41,3 +41,6 @@ One file per decision, numbered in order. Format: Date, Status, By, then Decisio
 - [0037. Skill derives the job path from brief output](0037-skill-derives-job-path-from-brief-output.md) (step-04 subagent)
 - [0038. Backlog keeps the type prefix on checked lines](0038-backlog-keeps-prefix-on-checked-lines.md) (step-04 subagent)
 - [0039. Rework resets stage to draft; next always records done](0039-rework-resets-stage-to-draft-and-next-always-records-done.md) (step-04 subagent)
+- [0060. Lite prompt claims jobs like the Claude skill](0060-lite-prompt-claims-before-resume-approve-rework-render.md) (step-07 subagent)
+- [0061. Lite gets a children command that runs one child at a time](0061-lite-children-loop-one-at-a-time.md) (step-07 subagent)
+- [0062. Prompt test checks the file text only](0062-lite-prompt-test-checks-text-not-vscode.md) (step-07 subagent)
