@@ -75,6 +75,7 @@ python3 scripts/sf.py checks ID --round N     # snapshot story.json to round-N/,
 python3 scripts/sf.py verdict FILE            # parse a review or decision: "PASS flags=pii,auth" or "INVALID <reason>"
 python3 scripts/sf.py gate ID [--apply]       # bank escalation floor: "OK" or "HUMAN: <reasons>"
 python3 scripts/sf.py escalate ID --why TEXT  # write a NEEDS-HUMAN decision.md and set the stage
+python3 scripts/sf.py human ID                    # print the "## For the human" section of decision.md
 ```
 
 Only the flags in `escalation.always_human` (default `pii`, `auth`, `payments`, `regulatory`) force NEEDS-HUMAN. When no repos or team docs are configured, source and API existence checks are SKIPPED.

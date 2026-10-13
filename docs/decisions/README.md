@@ -54,3 +54,4 @@ One file per decision, numbered in order. Format: Date, Status, By, then Decisio
 - [0050. doctor warns when Claude Code has not trusted the folder](0050-doctor-warns-when-claude-code-folder-untrusted.md) (coordinator)
 - [0051. claim takes over a claim whose holder process is dead](0051-claim-takes-over-a-dead-holder.md) (coordinator)
 - [0052. escalate records a gate reason](0052-escalate-records-a-gate-reason.md) (coordinator)
+- [0053. Skill runs one plain command per Bash call; sf.py human](0053-skill-one-plain-command-per-bash-call.md) (coordinator)
