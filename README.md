@@ -78,3 +78,9 @@ python3 scripts/sf.py escalate ID --why TEXT  # write a NEEDS-HUMAN decision.md 
 ```
 
 Only the flags in `escalation.always_human` (default `pii`, `auth`, `payments`, `regulatory`) force NEEDS-HUMAN. When no repos or team docs are configured, source and API existence checks are SKIPPED.
+
+## Docs
+
+- [docs/design.md](docs/design.md): architecture, schemas, state machine, agents, escalation rules.
+- [docs/steps/](docs/steps/): the build steps 01 to 08, each a standalone spec.
+- [docs/decisions/](docs/decisions/README.md): one file per decision, numbered, with why and how to undo.
