@@ -39,6 +39,12 @@ class SkillTests(unittest.TestCase):
                        "sf.py claim", "BUSY", "--force"):
             self.assertIn(phrase, self.text)
 
+    def test_epic_section(self):
+        m = re.search(r"^## Epic\n(.*?)(?=^## |\Z)", self.text, re.S | re.M)
+        self.assertIsNotNone(m, "no ## Epic section")
+        for phrase in ("/story children", "next-child", "spawn-children", "epic-status"):
+            self.assertIn(phrase, m.group(1))
+
     def test_agents(self):
         for a in ("story-writer", "reviewer-invest", "reviewer-ac", "reviewer-tech", "reviewer-security",
                   "story-approver"):

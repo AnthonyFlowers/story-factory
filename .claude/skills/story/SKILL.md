@@ -49,7 +49,7 @@ The first word of `$ARGUMENTS` selects the subcommand: `bug`, `spike`, `epic`, `
 - `epic <text>`: `--type epic`. If the text is a single Jira key (like `DEMO-100`), also pass `--jira-key KEY`.
 - `refine KEY`: `--type story --mode refine --jira-key KEY`, idea = `KEY`. After the pull, map the ticket's `issue_type` in `context/jira/KEY.*` (Bug→bug, Spike→spike, Story or Task→story). Epic: stop and tell the user to use `/story epic KEY`. Fix the type with `sf.py job ID --set type="bug"` (or `"spike"`).
 - `approve <id>`, `rework <id> <note>`, `resume <id>`, `render <id> [md]`: see sections 11 to 14.
-- `children <epic-id>`: implemented by step 05; see the Epic section.
+- `children <epic-id>`: claim and run the epic's child jobs; see the Epic section.
 - Anything else: `--type story`, idea = the whole text, verbatim.
 
 ## 4. Prompts
@@ -131,12 +131,34 @@ One line per transition, for example `004-refine-demo-101: round 1 tech CHANGES,
 - `draft`: spawn a fresh `story-writer`. If `round` is 1 or more and `revisions_used` is 1, use the revision prompt text plus `Read your current story.json first.`; otherwise `Draft round 1.` Then Draft step 3.
 - `review`: spawn only the reviewers whose `round-<round>/review-<lens>.md` is missing or invalid, in ONE message, then continue at Review step 3.
 - `approve`: spawn `story-approver`, then Approve step 3.
+- `children` (an epic): release the epic claim, then follow the Epic section (`epic-status`, then the `/story children` loop).
 - `ready` or `needs-human`: release the claim and just report.
 
 ## 14. /story render <id> [md]
 
 `sf.py claim <id>` (BUSY handling as in section 11), `sf.py render <id> --format md`, print the path it returns, then `sf.py release <id>`.
 
-## 15. Epics
+## Epic
 
-See the Epic section (added in step 05).
+`/story epic <idea|KEY>` runs sections 5 to 8 with `--type epic` (the writer drafts the children list, the four reviewers check the breakdown, the approver rules, `gate --apply`). Children run in parallel sessions, one Claude Code session each, never inside the epic session.
+
+1. After `gate --apply` (or after `/story approve ID` on an epic):
+   - `ready`: run `python3 scripts/sf.py spawn-children ID` (idempotent; prints `ref<TAB>child-id`). Then STOP and print the launch block, with `<n>` the child count, one line per child (ref, id, title from the epic `story.json`):
+     ```
+     Epic <ID> is READY. <n> child jobs created:
+       C1  <child-id>  <title>
+       ...
+     Run the children in parallel: open up to <n> Claude Code sessions in this repo and run
+       /story children <ID>
+     in each. Each session claims one child at a time until none are left.
+     Or run one child directly: /story resume <child-id>
+     ```
+   - `needs-human`: stop and report as in section 9. After `/story approve ID`, run `spawn-children` and print the same launch block. Or `/story rework ID <note>`.
+2. **`/story children <epic-id>`** loops:
+   1. `CHILD=$(python3 scripts/sf.py next-child <epic-id>)`. It claims atomically and prints the next unfinished, unclaimed child (siblings it depends on first, then lowest order), or nothing. If empty, go to step 5.
+   2. Run the single-job flow for CHILD from its recorded stage, as in section 13 (`/story resume`), but the claim is already held: do not claim again.
+   3. Report one line, for example `epic 007: C2 → 009-... needs-human`.
+   4. Repeat from step 1.
+   5. When nothing is left: `sf.py epic-status <epic-id> --apply`, then report the epic stage and each child's result. If it prints `RUNNING`, other sessions still hold children: report `RUNNING` and stop. The last session to finish sets the final stage.
+3. **`/story resume <epic-id>`** with stage `children`: run `sf.py epic-status <epic-id>`, then behave like `/story children <epic-id>`. A child whose holder is dead can be taken with `sf.py claim <child> --force` after the user confirms.
+4. **Context discipline.** After each child, keep only its one-line result in mind. The child's files hold everything else.

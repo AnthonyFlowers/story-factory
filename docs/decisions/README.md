@@ -41,3 +41,7 @@ One file per decision, numbered in order. Format: Date, Status, By, then Decisio
 - [0037. Skill derives the job path from brief output](0037-skill-derives-job-path-from-brief-output.md) (step-04 subagent)
 - [0038. Backlog keeps the type prefix on checked lines](0038-backlog-keeps-prefix-on-checked-lines.md) (step-04 subagent)
 - [0039. Rework resets stage to draft; next always records done](0039-rework-resets-stage-to-draft-and-next-always-records-done.md) (step-04 subagent)
+- [0040. Child slugs come from the child title](0040-child-slugs-come-from-the-child-title.md) (step-05 subagent)
+- [0041. spawn-children uses the library, resumes partial runs, rewrites the child brief](0041-spawn-children-resumes-and-never-claims-children.md) (step-05 subagent)
+- [0042. next-child ordering and claim re-check](0042-next-child-ordering-and-claim-recheck.md) (step-05 subagent)
+- [0043. epic-status --apply is a pure function of the children](0043-epic-status-apply-is-deterministic.md) (step-05 subagent)

@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "id": "910-epic-sample",
+  "type": "epic",
+  "title": "Statement self-service",
+  "jira": {
+    "key": "DEMO-100",
+    "issue_type": "Epic",
+    "project_key": "DEMO",
+    "labels": [],
+    "components": [],
+    "links": []
+  },
+  "context": "Support handles about a third of statement requests by hand (DEMO-100).",
+  "epic": {
+    "goal": "Customers find and download their own statements without calling support.",
+    "success_criteria": [
+      "Every statement from the last 24 months can be listed by date range and downloaded"
+    ],
+    "children": [
+      {
+        "ref": "C1",
+        "type": "story",
+        "title": "Filter statements by date range",
+        "summary": "Add optional from/to query parameters to GET /accounts/{accountId}/statements.",
+        "depends_on": [],
+        "order": 1
+      },
+      {
+        "ref": "C2",
+        "type": "spike",
+        "title": "Server-side statement PDFs",
+        "summary": "Decide whether accounts-api can render PDFs with an approved library.",
+        "depends_on": [],
+        "order": 2
+      },
+      {
+        "ref": "C3",
+        "type": "story",
+        "title": "Download a statement as PDF",
+        "summary": "Add GET /accounts/{accountId}/statements/{statementId}/pdf using the spike's choice.",
+        "depends_on": [
+          "C2"
+        ],
+        "order": 3
+      }
+    ]
+  },
+  "acceptance_criteria": [],
+  "out_of_scope": [
+    "Paper statement opt-out"
+  ],
+  "dependencies": [],
+  "open_questions": [],
+  "risk_flags": [
+    "pii"
+  ],
+  "sources": [
+    {
+      "kind": "jira",
+      "ref": "DEMO-100"
+    },
+    {
+      "kind": "openapi",
+      "ref": "accounts-api:openapi.json"
+    }
+  ],
+  "meta": {
+    "round": 1,
+    "blocked": null,
+    "revision_log": []
+  }
+}

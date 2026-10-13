@@ -1,0 +1,28 @@
+{
+  "id": "910-epic-sample",
+  "type": "epic",
+  "mode": "new",
+  "harness": "claude",
+  "idea": "Statement self-service",
+  "jira_key": "DEMO-100",
+  "parent": null,
+  "children": {},
+  "title": "Statement self-service",
+  "stage": "approve",
+  "round": 1,
+  "revisions_used": 0,
+  "reviews": {
+    "invest": "pending",
+    "ac": "pending",
+    "tech": "pending",
+    "security": "pending"
+  },
+  "flags": [],
+  "decision": null,
+  "approved_by": null,
+  "gate_reasons": [],
+  "writer_agent": null,
+  "claimed_by": null,
+  "created": "2026-10-13T00:00:00Z",
+  "updated": "2026-10-13T00:00:00Z"
+}

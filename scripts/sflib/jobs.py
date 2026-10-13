@@ -65,7 +65,8 @@ def _next_number(jobs: str) -> int:
     return best + 1
 
 
-def new_job(job_type, idea, mode="new", jira_key=None, parent=None, harness="claude") -> str:
+def new_job(job_type, idea, mode="new", jira_key=None, parent=None, harness="claude",
+            slug_text=None) -> str:
     jobs = config.jobs_dir()
     os.makedirs(jobs, exist_ok=True)
     if mode == "refine":
@@ -73,7 +74,7 @@ def new_job(job_type, idea, mode="new", jira_key=None, parent=None, harness="cla
             raise SFError("--mode refine needs --jira-key", 2)
         slug = "refine-" + jira_key.lower()
     else:
-        slug = slugify(idea)
+        slug = slugify(slug_text or idea)
     job_id = None
     for _ in range(50):
         num = _next_number(jobs)
@@ -156,6 +157,32 @@ def list_jobs() -> list:
     return out
 
 
+def _parent_section(job: dict) -> list:
+    """`## Parent epic` lines for a child job; empty when there is no readable parent."""
+    parent = job.get("parent")
+    if not parent:
+        return []
+    pdir = os.path.join(config.jobs_dir(), parent)
+    try:
+        with open(os.path.join(pdir, "story.json")) as f:
+            story = json.load(f)
+        with open(os.path.join(pdir, "job.json")) as f:
+            pjob = json.load(f)
+    except (OSError, ValueError):
+        return ["", "## Parent epic", "", "Epic job: %s (its story.json is not readable yet)" % parent]
+    ref = next((r for r, j in (pjob.get("children") or {}).items() if j == job["id"]), None)
+    kids = story.get("epic", {}).get("children", [])
+    me = next((c for c in kids if c["ref"] == ref), None)
+    L = ["", "## Parent epic", "",
+         "- Epic story: %s" % os.path.abspath(os.path.join(pdir, "story.json")),
+         "- Epic goal: %s" % story.get("epic", {}).get("goal", ""),
+         "- This child: %s" % (ref or "unknown"),
+         "- Depends on: %s" % (", ".join(me.get("depends_on", [])) if me and me.get("depends_on") else "none"),
+         "", "Sibling stories (do not overlap with them):"]
+    L += ["- %s: %s" % (c["ref"], c["title"]) for c in kids if c["ref"] != ref]
+    return L
+
+
 def write_brief(job_dir_path: str) -> str:
     """(Re)write brief.md for the job in job_dir_path. Returns its path."""
     with open(os.path.join(job_dir_path, "job.json")) as f:
@@ -168,6 +195,7 @@ def write_brief(job_dir_path: str) -> str:
          "", "## Idea", ""]
     for line in (job.get("idea") or "").splitlines() or [""]:
         L.append("> " + line)
+    L += _parent_section(job)
     L += ["", "## Where to look", ""]
     bullets = []
     for r in cfg["repos"]:

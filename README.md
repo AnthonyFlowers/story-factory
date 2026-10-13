@@ -97,3 +97,15 @@ python3 scripts/sf.py backlog done LINE ID
 ```
 
 `new-job` claims the job it creates, so two sessions never drive one job; `gate --apply` and `escalate` release it. `/story resume`, `approve`, `rework` and `render` claim first and stop on BUSY. The backlog is `factory/backlog.md` (gitignored, copied from `factory/backlog.example.md` on first use) and is locked with `flock`.
+
+## Epics
+
+`/story epic <idea|KEY>` drafts and reviews an epic breakdown like any other job. When it is READY (or after `/story approve`), the epic run creates one child job per child, prints a launch block and stops. Open several Claude Code sessions in this repo and run `/story children <epic-id>` in each: every session claims one child at a time with `next-child` until none are left. Or run a single child with `/story resume <child-id>`.
+
+```bash
+python3 scripts/sf.py spawn-children EPIC_ID        # REF<TAB>JOB_ID per child, in dependency order; idempotent; leaves children unclaimed
+python3 scripts/sf.py next-child EPIC_ID [--who T]  # claim and print the next child id, or print nothing when none is left
+python3 scripts/sf.py epic-status EPIC_ID [--apply] # one line per child, then ALL-DONE ready=N needs-human=M, or RUNNING
+```
+
+`spawn-children` needs the epic at stage `ready`, or `needs-human` after `/story approve`; it rejects unknown `depends_on` refs and cycles. `next-child` prefers children whose siblings are all done, then the lowest `order`. `epic-status --apply` sets the epic to `ready`, or to `needs-human` with `gate_reasons: ["children-need-human:<ids>"]`, once every child is terminal; it is safe to run from several sessions. A child's `brief.md` gets a `## Parent epic` section.
