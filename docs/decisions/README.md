@@ -45,3 +45,6 @@ One file per decision, numbered in order. Format: Date, Status, By, then Decisio
 - [0041. spawn-children uses the library, resumes partial runs, rewrites the child brief](0041-spawn-children-resumes-and-never-claims-children.md) (step-05 subagent)
 - [0042. next-child ordering and claim re-check](0042-next-child-ordering-and-claim-recheck.md) (step-05 subagent)
 - [0043. epic-status --apply is a pure function of the children](0043-epic-status-apply-is-deterministic.md) (step-05 subagent)
+- [0044. Lite prompt claims jobs like the Claude skill](0044-lite-prompt-claims-before-resume-approve-rework-render.md) (step-07 subagent)
+- [0045. Lite gets a children command that runs one child at a time](0045-lite-children-loop-one-at-a-time.md) (step-07 subagent)
+- [0046. Prompt test checks the file text only](0046-lite-prompt-test-checks-text-not-vscode.md) (step-07 subagent)

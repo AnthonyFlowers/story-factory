@@ -109,3 +109,9 @@ python3 scripts/sf.py epic-status EPIC_ID [--apply] # one line per child, then A
 ```
 
 `spawn-children` needs the epic at stage `ready`, or `needs-human` after `/story approve`; it rejects unknown `depends_on` refs and cycles. `next-child` prefers children whose siblings are all done, then the lowest `order`. `epic-status --apply` sets the epic to `ready`, or to `needs-human` with `gate_reasons: ["children-need-human:<ids>"]`, once every child is terminal; it is safe to run from several sessions. A child's `brief.md` gets a `## Parent epic` section.
+
+## Copilot lite
+
+`.github/prompts/story-lite.prompt.md` is a fallback for VS Code GitHub Copilot (agent mode). Open the repo folder and type `/story-lite <idea>` (also `bug`, `spike`, `epic`, `refine`, `children`, `resume`, `approve`, `rework`, `render`). It plays the writer, the four reviewers (security, tech, ac, invest) and the approver in one chat, then runs `sf.py gate --apply`. The job folder is the same as the Claude `/story` skill's, with `"harness": "copilot-lite"` in `job.json`. It never writes to Jira; when a ticket is missing it stops and asks you to save your Jira skill output under `context/jira/` and run `/story-lite resume <id>`. Epic children are created with `spawn-children`; run them in separate chats or Claude sessions.
+
+Manual test (not yet run): copy `tests/fixtures/factory.config.test.json` to `factory.config.json`, run `/story-lite bug DEMO-102 statements 500 for empty accounts`, save `python3 scripts/jira_stub.py DEMO-102` output to the path it asks for, then `/story-lite resume <id>`. Record here: whether `tools: [...]` was accepted, whether Copilot asked for terminal approval on each `sf.py` call, and the model used.
