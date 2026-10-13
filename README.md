@@ -31,3 +31,12 @@ python3 scripts/sf.py list
 python3 scripts/sf.py validate path/to/story.json
 python3 scripts/sf.py render ID_OR_PATH
 ```
+
+## Dashboard
+
+```bash
+python3 scripts/sf.py dashboard [--port 8765]   # http://127.0.0.1:8765/dashboard.html, loopback only
+```
+
+Read-only board of `factory/jobs/` that polls every 2 s. It needs no network. `--jobs-dir DIR` serves a
+folder holding `dashboard.html` and `jobs/`; `python3 tests/make_demo_jobs.py DIR` builds one with fake jobs.
