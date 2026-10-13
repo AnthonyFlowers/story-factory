@@ -55,3 +55,4 @@ One file per decision, numbered in order. Format: Date, Status, By, then Decisio
 - [0051. claim takes over a claim whose holder process is dead](0051-claim-takes-over-a-dead-holder.md) (coordinator)
 - [0052. escalate records a gate reason](0052-escalate-records-a-gate-reason.md) (coordinator)
 - [0053. Skill runs one plain command per Bash call; sf.py human](0053-skill-one-plain-command-per-bash-call.md) (coordinator)
+- [0054. Reviewers are told to save the review, not reply with it](0054-reviewers-told-to-write-not-reply.md) (coordinator)

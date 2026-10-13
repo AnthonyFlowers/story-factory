@@ -56,5 +56,12 @@ class AgentTests(unittest.TestCase):
         self.assertEqual(sorted(f[:-3] for f in os.listdir(AGENTS) if f.endswith(".md")), sorted(SPEC))
 
 
+class ReviewerWriteRuleTests(unittest.TestCase):
+    def test_reviewers_must_write_the_file(self):
+        for name in ("reviewer-invest", "reviewer-ac", "reviewer-tech", "reviewer-security"):
+            with self.subTest(agent=name):
+                self.assertIn("Never return the review as your reply", parse(name)[1])
+
+
 if __name__ == "__main__":
     unittest.main()
